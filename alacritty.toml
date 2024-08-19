@@ -1,0 +1,11 @@
+[font]
+normal.family="JetBrainsMonoNL Nerd Font Mono"
+normal.style="Semibold"
+size=14
+
+[window]
+dimensions = { columns = 80, lines = 25}
+decorations = "Full"
+opacity = 1
+startup_mode = "Maximized"
+dynamic_title = true
