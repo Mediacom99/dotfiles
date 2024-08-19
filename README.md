@@ -1,12 +1,12 @@
 
 # Table of Contents
 
-1.  [What dotfiles ?](#org2033f4c)
+1.  [Content](#orgeb3a351)
 
 
-<a id="org2033f4c"></a>
+<a id="orgeb3a351"></a>
 
-# What dotfiles ?
+# Content
 
 This repository contains every configuration file I use to configure
 my laptop operating system, apps and pretty much everything else.

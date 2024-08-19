@@ -1,4 +1,4 @@
-* What dotfiles ?
+* Content
 
 This repository contains every configuration file I use to configure
 my laptop operating system, apps and pretty much everything else.
