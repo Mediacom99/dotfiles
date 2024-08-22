@@ -1,0 +1,16 @@
+[font]
+normal.family="JetBrainsMonoNL Nerd Font Mono"
+normal.style="Semibold"
+size=12
+
+[window]
+dimensions = { columns = 80, lines = 25}
+decorations = "Full"
+opacity = 1
+startup_mode = "Windowed"
+dynamic_title = true
+
+[keyboard]
+bindings = [
+{ key="s", mods = "Super|Command", mode = "AppCursor|AppKeypad|Search|Alt|Vi", action = "SearchBackward"},
+]
