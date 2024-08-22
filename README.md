@@ -1,10 +1,10 @@
 
 # Table of Contents
 
-1.  [Content](#orgeb3a351)
+1.  [Content](#orgb79f51a)
 
 
-<a id="orgeb3a351"></a>
+<a id="orgb79f51a"></a>
 
 # Content
 
@@ -17,8 +17,8 @@ This is my system: (i will add a fastfetch output)
 
 -   OS: NixOS
 -   Package manager: nix
--   Desktop Env: Plasma6
--   Window Manager: KDE on Wayland
+-   Desktop Env: KDE Plasma 6
+-   Window Manager: KWin (Wayland)
 -   Font: JetBrainsMonoNL Mono Nerd Font
 -   Terminal: Alacritty
 -   Text Editor: emacs-nox
