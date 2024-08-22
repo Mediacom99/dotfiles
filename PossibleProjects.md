@@ -1,14 +1,14 @@
 
 # Table of Contents
 
-1.  [Active projects](#org0823526)
-2.  [Programming projects indexed by language:](#org50e8d3c)
-    1.  [Zig](#orgd5e4e1d)
-    2.  [Rust projects](#org944d2f5)
-    3.  [C projects](#org4d3398b)
+1.  [Active projects](#orgb2f672c)
+2.  [Programming projects indexed by language:](#org8b33218)
+    1.  [Zig](#org8c8a304)
+    2.  [Rust](#org0c0b72e)
+    3.  [C](#org1f647ed)
 
 
-<a id="org0823526"></a>
+<a id="orgb2f672c"></a>
 
 # Active projects
 
@@ -16,15 +16,17 @@
     -   Gui bindings: <https://github.com/slimsag/mach-glfw>
 
 
-<a id="org50e8d3c"></a>
+<a id="org8b33218"></a>
 
 # Programming projects indexed by language:
 
 
-<a id="orgd5e4e1d"></a>
+<a id="org8c8a304"></a>
 
 ## Zig
 
+-   Writing a simple Claude API cli interface
+    -   maybe also write an emacs plugin that uses it
 -   Rewriting the Doom engine in zig:
     -   Source code help:
         <https://doomwiki.org/wiki/Doom_source_code>
@@ -48,17 +50,17 @@
     -   look for *OS Dev Wiki*
 
 
-<a id="org944d2f5"></a>
+<a id="org0c0b72e"></a>
 
-## Rust projects
+## Rust
 
 -   Writing a messaging/voice p2p app:
     -   libp2p: <https://libp2p.io/>
 
 
-<a id="org4d3398b"></a>
+<a id="org1f647ed"></a>
 
-## C projects
+## C
 
 -   Writing a simple compiler
 
