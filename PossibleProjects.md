@@ -63,4 +63,4 @@
 ## C
 
 -   Writing a simple compiler
-
+    - some resources: https://c9x.me/compile/bib/
