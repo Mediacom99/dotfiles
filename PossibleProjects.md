@@ -48,6 +48,7 @@
 
 -   Simple Kernel/OS:
     -   https://wiki.osdev.org/Expanded_Main_Page
+    -   https://github.com/Francesco601/AWESOME-Operating-System-Resources?tab=readme-ov-file
 
 
 <a id="org0c0b72e"></a>
