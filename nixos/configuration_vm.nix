@@ -116,6 +116,7 @@ in
 	      nixfmt-classic
 	      vlc
         unstable.zls
+        whois
       ];
       #use unstable.<package-name>
       #to fetch from unstable channel
