@@ -47,7 +47,8 @@
 -   Writing a simple neural network library
 
 -   Simple Kernel/OS:
-    -   look for *OS Dev Wiki*
+    -   https://wiki.osdev.org/Expanded_Main_Page
+    -   https://github.com/Francesco601/AWESOME-Operating-System-Resources?tab=readme-ov-file
 
 
 <a id="org0c0b72e"></a>
@@ -63,4 +64,4 @@
 ## C
 
 -   Writing a simple compiler
-
+    - some resources: https://c9x.me/compile/bib/
