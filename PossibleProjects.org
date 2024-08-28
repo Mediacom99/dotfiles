@@ -38,6 +38,6 @@
 - Writing a messaging/voice p2p app: [[https://libp2p.io/][Libp2p Website]]
 
 ** C
--   Writing a simple compiler
-    - some resources: https://c9x.me/compile/bib/
+- Writing a simple compiler
+  - [[https://c9x.me/compile/bib/][Resources for Amateur Compiler Writers]]
       
