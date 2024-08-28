@@ -30,7 +30,7 @@
   - [[https://neuralnetworksanddeeplearning.com/index.html][Guide Simple Neural Network]]
 
 - Simple Kernel/OS:
-  - https://wiki.osdev.org/Expanded_Main_Page
+  - [[https://wiki.osdev.org/Expanded_Main_Page][OS-Dev-Wiki]]
   - https://github.com/Francesco601/AWESOME-Operating-System-Resources?tab=readme-ov-file
 
 
