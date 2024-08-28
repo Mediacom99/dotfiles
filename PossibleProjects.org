@@ -1,6 +1,6 @@
 * Active projects
 
-- Zanagrafe: retrieve data about residents
+- Zanagrafe: retrieve data about italian residents
   - Gui bindings: [[https://github.com/slimsag/mach-glfw][Mach-glfw]]
 
 * Programming projects indexed by language:
