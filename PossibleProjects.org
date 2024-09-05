@@ -1,11 +1,15 @@
 * Active projects
 
-- Zanagrafe: retrieve data about italian residents
+** Zig
+- [[https://www.github.com/Mediacom99/zanagrafe][Zanagrafe]]: (zig) retrieve data about italian residents
   - Gui bindings: [[https://github.com/slimsag/mach-glfw][Mach-glfw]]
+
+- [[https://www.github.com/Mediacom99/zeuron][Zeuron]]: (zig) writing a simple neural network library from scratch:
+  - [[https://neuralnetworksanddeeplearning.com/index.html][Guide Simple Neural Network]]
+  - [[https://colah.github.io/posts/2015-08-Understanding-LSTMs/][Understanding LSTM Networks]]
 
 * Programming projects indexed by language:
 
-** Zig
 - Writing game of life
   - continuous implementation: https://arxiv.org/pdf/1111.1567
     
@@ -26,18 +30,12 @@
 
 - Writing my version of spherophorias sphmap: [[https://github.com/sphaerophoria/sphmap][Sphmap Github Repo]]
 
-- Writing a simple neural network library:
-  - [[https://neuralnetworksanddeeplearning.com/index.html][Guide Simple Neural Network]]
-
 - Simple Kernel/OS:
   - [[https://wiki.osdev.org/Expanded_Main_Page][OS-Dev-Wiki]]
   - https://github.com/Francesco601/AWESOME-Operating-System-Resources?tab=readme-ov-file
 
-
-** Rust
 - Writing a messaging/voice p2p app: [[https://libp2p.io/][Libp2p Website]]
 
-** C
 - Writing a simple compiler
   - [[https://c9x.me/compile/bib/][Resources for Amateur Compiler Writers]]
       
