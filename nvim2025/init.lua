@@ -33,7 +33,10 @@ vim.opt.scrolloff = 16
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
+vim.opt.pumheight = 10
 
+
+local servers = { "lua_ls", "zls", "bashls", "clangd" }
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -70,7 +73,7 @@ require("lazy").setup({
         --         })
         --         vim.cmd("colorscheme rose-pine")
         --     end
-        -- },
+        {'akinsho/toggleterm.nvim', version = "*", config = true},
         {
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
@@ -120,7 +123,6 @@ require("lazy").setup({
                 local lspconf = require("lspconfig")
                 local mason = require("mason")
                 local mason_lspconf = require("mason-lspconfig")
-                local servers = { "lua_ls", "zls", "bashls", "clangd" }
                 mason.setup()
                 mason_lspconf.setup({
                     -- available servers: https://github.com/williamboman/mason-lspconfig.nvim
@@ -163,7 +165,7 @@ require("lazy").setup({
                 configs.setup({
                     sources = configs.config.sources({
                         { name = "nvim_lsp" },
-                        { name = "buffer" },
+                        -- { name = "buffer" },
                         { name = "nvim_lua" },
                         { name = "cmdline" },
                     }),
@@ -172,9 +174,20 @@ require("lazy").setup({
                         documentation = configs.config.window.bordered(),
                     },
                     mapping = configs.mapping.preset.insert({
-                            ['<Tab>'] = configs.mapping.confirm({ select = true }),
+                            ['<CR>'] = configs.mapping.confirm({ select = true }),
                         }),
                 })
+                configs.setup.cmdline({'/', '?'}, {
+                    mapping = configs.mapping.preset.cmdline(),
+                    sources = {
+                        { name = 'buffer' }
+                    }
+                })
+                for _, value in ipairs(servers) do
+                    require('lspconfig')[value].setup {
+                        capabilities = require("cmp_nvim_lsp").default_capabilities()
+                    }
+                end
             end
         },
         {
@@ -220,13 +233,41 @@ require("lazy").setup({
 
 -- Keymaps
 -- TODO move this into telescope config
-local builtin = require('telescope.builtin')
+local telescope = require('telescope.builtin')
 local nvimtree = require('nvim-tree.api')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+local opts = { noremap = true, silent = true }
+vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', telescope.help_tags, { desc = 'Telescope help tags' })
 vim.keymap.set('n', '<leader>e', nvimtree.tree.toggle, {desc = 'NvimTree toggle'})
+
+-- Lsp keybinds
+vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
+vim.keymap.set('n', 'gD', vim.lsp.buf.definition, {desc = 'Telescope: go to definition'})
+-- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, {desc = 'Go to previous diagnostic'})
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, {desc = 'Go to next diagnostic'})
+
+vim.keymap.set('n', 'gr', telescope.lsp_references, {
+    desc = 'Find references'
+})
+vim.diagnostic.config({
+    virtual_text = true,
+    virtual_lines = false,
+    signs = false,
+    update_in_insert = true,
+    -- float = {
+    --     focusable = false,
+    --     style = "minimal",
+    --     border = "rounded",
+    --     source = "always",
+    --     header = "",
+    --     prefix = "",
+    -- },
+})
+-- Maybe I need this:
+-- vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
 -- Custom commands
 -- Open telescope find files command at startup
