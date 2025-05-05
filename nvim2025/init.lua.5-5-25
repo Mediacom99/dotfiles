@@ -37,9 +37,11 @@ vim.opt.pumheight = 10
 
 
 local servers = { "lua_ls", "zls", "bashls", "clangd" }
-local lazy = require("lazy")
-lazy.setup({
+
+-- Setup lazy.nvim
+require("lazy").setup({
     spec = {
+        -- Gruber Darker theme
         {
             "blazkowolf/gruber-darker.nvim",
             lazy = false,
@@ -58,29 +60,20 @@ lazy.setup({
             end
         },
         -- {
-        --   'neanias/everforest-nvim',
-        --   version = false,
-        --   lazy = false,
-        --   priority = 1000,
-        --   config = function()
-        --     require("everforest").setup({
-        --         background = "hard"
-        --     })
-        --     vim.cmd([[colorscheme everforest]])
-        --     vim.o.background = "dark"
-        --   end,
-        -- },
-        {
-            'akinsho/toggleterm.nvim',
-            version = "*",
-            config = function ()
-               require("toggleterm").setup{
-                    open_mapping = [[<C-p>]],
-                    direction = "vertical",
-                    size = 80,
-                }
-            end
-        },
+        --     "rose-pine/neovim",
+        --     lazy = false,
+        --     priority = 1000,
+        --     name = "rose-pine",
+        --     config = function()
+        --         local config = require("rose-pine")
+        --         config.setup({
+        --             styles = {
+        --                 italic = false,
+        --             },
+        --         })
+        --         vim.cmd("colorscheme rose-pine")
+        --     end
+        {'akinsho/toggleterm.nvim', version = "*", config = true},
         {
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
@@ -130,7 +123,6 @@ lazy.setup({
                 local lspconf = require("lspconfig")
                 local mason = require("mason")
                 local mason_lspconf = require("mason-lspconfig")
-                local blink_capabilities = require("blink.cmp").get_lsp_capabilities()
                 mason.setup()
                 mason_lspconf.setup({
                     -- available servers: https://github.com/williamboman/mason-lspconfig.nvim
@@ -146,56 +138,58 @@ lazy.setup({
                             }
                         }
                     }
-                }, {capabilities = blink_capabilities})
+                })
+
                 -- zls config json schema: 
                 -- https://raw.githubusercontent.com/zigtools/zls/refs/tags/0.13.0/schema.json
                 lspconf.zls.setup({
                     zig_lib_path = "/home/mediacom/zig013/lib",
                     zig_exe_path = "/home/mediacom/zig013",
-                },{capabilities = blink_capabilities})
-                lspconf.bashls.setup({capabilities = blink_capabilities})
-                lspconf.clangd.setup({capabilities = blink_capabilities})
+                })
+
+                lspconf.bashls.setup({})
+                lspconf.clangd.setup({})
             end
         },
-        -- {
-        --     "hrsh7th/nvim-cmp",
-        --     dependencies = {
-        --         "hrsh7th/cmp-nvim-lsp",
-        --         "hrsh7th/cmp-buffer",
-        --         "hrsh7th/cmp-path",
-        --         "hrsh7th/cmp-cmdline",
-        --         "hrsh7th/cmp-nvim-lua",
-        --     },
-        --     config = function()
-        --         local configs = require("cmp")
-        --         configs.setup({
-        --             sources = configs.config.sources({
-        --                 { name = "nvim_lsp" },
-        --                 { name = "buffer" },
-        --                 { name = "nvim_lua" },
-        --                 -- { name = "cmdline" },
-        --             }),
-        --             windows = {
-        --                 completion = configs.config.window.bordered(),
-        --                 documentation = configs.config.window.bordered(),
-        --             },
-        --             mapping = configs.mapping.preset.insert({
-        --                     ['<CR>'] = configs.mapping.confirm({ select = true }),
-        --                 }),
-        --         })
-        --         configs.setup.cmdline({'/', '?'}, {
-        --             mapping = configs.mapping.preset.cmdline(),
-        --             sources = {
-        --                 { name = 'buffer' }
-        --             }
-        --         })
-        --         for _, value in ipairs(servers) do
-        --             require('lspconfig')[value].setup {
-        --                 capabilities = require("cmp_nvim_lsp").default_capabilities()
-        --             }
-        --         end
-        --     end
-        -- },
+        {
+            "hrsh7th/nvim-cmp",
+            dependencies = {
+                "hrsh7th/cmp-nvim-lsp",
+                "hrsh7th/cmp-buffer",
+                "hrsh7th/cmp-path",
+                "hrsh7th/cmp-cmdline",
+                "hrsh7th/cmp-nvim-lua",
+            },
+            config = function()
+                local configs = require("cmp")
+                configs.setup({
+                    sources = configs.config.sources({
+                        { name = "nvim_lsp" },
+                        -- { name = "buffer" },
+                        { name = "nvim_lua" },
+                        { name = "cmdline" },
+                    }),
+                    windows = {
+                        completion = configs.config.window.bordered(),
+                        documentation = configs.config.window.bordered(),
+                    },
+                    mapping = configs.mapping.preset.insert({
+                            ['<CR>'] = configs.mapping.confirm({ select = true }),
+                        }),
+                })
+                configs.setup.cmdline({'/', '?'}, {
+                    mapping = configs.mapping.preset.cmdline(),
+                    sources = {
+                        { name = 'buffer' }
+                    }
+                })
+                for _, value in ipairs(servers) do
+                    require('lspconfig')[value].setup {
+                        capabilities = require("cmp_nvim_lsp").default_capabilities()
+                    }
+                end
+            end
+        },
         {
             "folke/which-key.nvim",
             event = "VeryLazy",
@@ -225,53 +219,13 @@ lazy.setup({
                     },
                 })
               end,
-        },
-        {
-          'saghen/blink.cmp',
-          dependencies = { 'rafamadriz/friendly-snippets' },
-          version = '1.*',
-          ---@module 'blink.cmp'
-          ---@type blink.cmp.Config
-          opts = {
-            -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
-            -- 'super-tab' for mappings similar to vscode (tab to accept)
-            -- 'enter' for enter to accept
-            -- 'none' for no mappings
-            --
-            -- All presets have the following mappings:
-            -- C-space: Open menu or open docs if already open
-            -- C-n/C-p or Up/Down: Select next/previous item
-            -- C-e: Hide menu
-            -- C-k: Toggle signature help (if signature.enabled = true)
-            --
-            -- See :h blink-cmp-config-keymap for defining your own keymap
-            keymap = { preset = 'enter' },
-            appearance = {
-              nerd_font_variant = 'mono'
-            },
-            completion = { documentation = { auto_show = true } },
-            sources = {
-              default = { 'lsp', 'path', 'snippets', 'buffer' },
-            },
-            signature = { enabled = true, window = { show_documentation = false} },
-            fuzzy = { implementation = "rust" }
-          },
-          opts_extend = { "sources.default" }
-        },
-        -- {
-        --     -- This plugin reconstructs completion item and 
-        --     -- applies treesitter highlight queries 
-        --     -- to produce variable-size highlight ranges.
-        --     "xzbdmw/colorful-menu.nvim",
-        --     config = function ()
-        --         require("colorful-menu").setup({})
-        --     end
-        -- }
+        }
+
 
     },
     -- Configure any other settings here. See the documentation for more details.
     -- colorscheme that will be used when installing plugins.
-    -- install = { colorscheme = { "habamax" } },
+    install = { colorscheme = { "habamax" } },
     -- automatically check for plugin updates
     checker = { enabled = true },
     rocks = { enabled = true },
@@ -298,24 +252,30 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, {desc = 'Go to next diagnost
 vim.keymap.set('n', 'gr', telescope.lsp_references, {
     desc = 'Find references'
 })
-
--- Remap key to exit terminal mode
-vim.keymap.set('t', '<C-x>', [[<C-\><C-n>]], { noremap = true, silent = true })
-
 vim.diagnostic.config({
     virtual_text = true,
     virtual_lines = false,
     signs = false,
     update_in_insert = true,
+    -- float = {
+    --     focusable = false,
+    --     style = "minimal",
+    --     border = "rounded",
+    --     source = "always",
+    --     header = "",
+    --     prefix = "",
+    -- },
 })
+-- Maybe I need this:
+-- vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
 -- Custom commands
 -- Open telescope find files command at startup
--- vim.api.nvim_create_autocmd("VimEnter", {
---     callback = function()
---         -- Only open telescope if no files were specified
---         if #vim.fn.argv() == 0 then
---             require("telescope.builtin").find_files()
---         end
---     end,
--- })
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        -- Only open telescope if no files were specified
+        if #vim.fn.argv() == 0 then
+            require("telescope.builtin").find_files()
+        end
+    end,
+})
