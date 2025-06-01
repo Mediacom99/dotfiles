@@ -87,7 +87,7 @@ lazy.setup({
             config = function ()
                 local configs = require("nvim-treesitter.configs")
                 configs.setup({
-                    ensure_installed = { "c", "lua", "vim", "vimdoc", "javascript", "html", "zig"},
+                    ensure_installed = { "c", "lua", "vim", "vimdoc", "javascript", "html", "zig", "bash"},
                     sync_install = false,
                     highlight = { enable = true },
                     indent = { enable = true },
@@ -151,11 +151,12 @@ lazy.setup({
                 -- zls config json schema: 
                 -- https://raw.githubusercontent.com/zigtools/zls/refs/tags/0.13.0/schema.json
                 lspconf.zls.setup({
-                    zig_lib_path = "/home/mediacom/zig013/lib",
-                    zig_exe_path = "/home/mediacom/zig013",
+                    zig_lib_path = "/home/mediacom/zig-x86_64-linux-0.14.1/lib",
+                    zig_exe_path = "/home/mediacom/zig-x86_64-linux-0.14.1/",
+                    root_dir = lspconf.util.root_pattern('build.zig', '.git'),
                 },{capabilities = blink_capabilities})
                 lspconf.bashls.setup({capabilities = blink_capabilities})
-                lspconf.clangd.setup({capabilities = blink_capabilities})
+                -- lspconf.clangd.setup({capabilities = blink_capabilities})
                 lspconf.basedpyright.setup({capabilities = blink_capabilities})
             end
         },
@@ -293,7 +294,6 @@ vim.keymap.set('n', '<leader>e', nvimtree.tree.toggle, {desc = 'NvimTree toggle'
 -- Lsp keybinds
 vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
 vim.keymap.set('n', 'gD', vim.lsp.buf.definition, {desc = 'Telescope: go to definition'})
-vim.keymap.set('n', '<leader>L', vim.diagnostic.open_float, {desc = 'Open vim diagnostic float window'})
 -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, {desc = 'Go to previous diagnostic'})
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, {desc = 'Go to next diagnostic'})
@@ -304,6 +304,24 @@ vim.keymap.set('n', 'grr', telescope.lsp_references, {
 
 -- Remap key to exit terminal mode
 vim.keymap.set('t', '<C-x>', [[<C-\><C-n>]], { noremap = true, silent = true })
+
+-- Normal mode: Alt+h/j/k/l to move between splits
+vim.keymap.set('n', '<A-h>', '<C-w>h')
+vim.keymap.set('n', '<A-j>', '<C-w>j')
+vim.keymap.set('n', '<A-k>', '<C-w>k')
+vim.keymap.set('n', '<A-l>', '<C-w>l')
+
+-- Insert mode: Alt+h/j/k/l to move between splits
+vim.keymap.set('i', '<A-h>', '<C-\\><C-N><C-w>h')
+vim.keymap.set('i', '<A-j>', '<C-\\><C-N><C-w>j')
+vim.keymap.set('i', '<A-k>', '<C-\\><C-N><C-w>k')
+vim.keymap.set('i', '<A-l>', '<C-\\><C-N><C-w>l')
+
+-- Terminal mode: Alt+h/j/k/l to move between splits
+vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h')
+vim.keymap.set('t', '<A-j>', '<C-\\><C-N><C-w>j')
+vim.keymap.set('t', '<A-k>', '<C-\\><C-N><C-w>k')
+vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l')
 
 vim.diagnostic.config({
     virtual_text = true,
