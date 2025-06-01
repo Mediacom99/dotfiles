@@ -36,7 +36,7 @@ vim.opt.termguicolors = true
 vim.opt.pumheight = 10
 
 
-local servers = { "lua_ls", "zls", "bashls", "clangd" }
+local servers = { "lua_ls", "bashls", "clangd" }
 local lazy = require("lazy")
 lazy.setup({
     spec = {
@@ -148,14 +148,16 @@ lazy.setup({
                         }
                     }
                 }, {capabilities = blink_capabilities})
-                -- zls config json schema: 
-                -- https://raw.githubusercontent.com/zigtools/zls/refs/tags/0.13.0/schema.json
                 lspconf.zls.setup({
-                    zig_lib_path = "/home/mediacom/zig-x86_64-linux-0.14.1/lib",
-                    zig_exe_path = "/home/mediacom/zig-x86_64-linux-0.14.1/",
-                    root_dir = lspconf.util.root_pattern('build.zig', '.git'),
-                },{capabilities = blink_capabilities})
-                lspconf.bashls.setup({capabilities = blink_capabilities})
+                    capabilities = blink_capabilities,
+                    cmd = {"/home/mediacom/zls/zig-out/bin/zls"},
+                    settings = {
+                        zls = {
+                            semantic_token = "full;",
+                            warn_style = "true",
+                        },
+                    }
+                })
                 -- lspconf.clangd.setup({capabilities = blink_capabilities})
                 lspconf.basedpyright.setup({capabilities = blink_capabilities})
             end
