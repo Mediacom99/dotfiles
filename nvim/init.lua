@@ -136,6 +136,7 @@ lazy.setup({
                     -- available servers: https://github.com/williamboman/mason-lspconfig.nvim
                     ensure_installed = servers,
                     automatic_installation = true,
+                    automatic_enable = false,
                 })
 
                 lspconf.lua_ls.setup({
@@ -155,6 +156,7 @@ lazy.setup({
                 },{capabilities = blink_capabilities})
                 lspconf.bashls.setup({capabilities = blink_capabilities})
                 lspconf.clangd.setup({capabilities = blink_capabilities})
+                lspconf.basedpyright.setup({capabilities = blink_capabilities})
             end
         },
         -- {
@@ -291,11 +293,12 @@ vim.keymap.set('n', '<leader>e', nvimtree.tree.toggle, {desc = 'NvimTree toggle'
 -- Lsp keybinds
 vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
 vim.keymap.set('n', 'gD', vim.lsp.buf.definition, {desc = 'Telescope: go to definition'})
+vim.keymap.set('n', '<leader>L', vim.diagnostic.open_float, {desc = 'Open vim diagnostic float window'})
 -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, {desc = 'Go to previous diagnostic'})
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, {desc = 'Go to next diagnostic'})
 
-vim.keymap.set('n', 'gr', telescope.lsp_references, {
+vim.keymap.set('n', 'grr', telescope.lsp_references, {
     desc = 'Find references'
 })
 

@@ -1,0 +1,168 @@
+# ================================
+# BASIC SETTINGS
+# ================================
+
+# Use Ctrl-a as prefix instead of Ctrl-b (easier to reach)
+# Unbind the default prefix first
+unbind C-b
+set-option -g prefix C-a
+bind-key C-a send-prefix
+
+# Enable 256 colors and true color support (important for Neovim themes)
+set -g default-terminal "screen-256color"
+set -ga terminal-overrides ",xterm-256color*:Tc"
+
+# Start window and pane numbering at 1 (easier than reaching for 0)
+set -g base-index 1
+setw -g pane-base-index 1
+
+# Renumber windows when one is closed (keeps numbering sequential)
+set -g renumber-windows on
+
+# Increase scrollback buffer size (useful for long outputs)
+set -g history-limit 10000
+
+# Enable mouse support (useful for resizing panes and selecting text)
+# set -g mouse on
+
+# Reduce escape time (important for Neovim responsiveness)
+set -sg escape-time 0
+
+# Enable focus events (helps Neovim detect when tmux pane gains/loses focus)
+set -g focus-events on
+
+# ================================
+# VIM-STYLE KEYBINDINGS
+# ================================
+
+# Use vim keybindings in copy mode
+setw -g mode-keys vi
+
+# Vim-style pane navigation
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Vim-style pane resizing (hold prefix + key)
+bind -r H resize-pane -L 5
+bind -r J resize-pane -D 5
+bind -r K resize-pane -U 5
+bind -r L resize-pane -R 5
+
+# Vim-style copy mode bindings
+bind-key -T copy-mode-vi v send-keys -X begin-selection
+bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
+
+# Enter copy mode with prefix + v (like visual mode in vim)
+bind v copy-mode
+
+# ================================
+# PANE AND WINDOW MANAGEMENT
+# ================================
+
+# Split panes with | and - (more intuitive than % and ")
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+unbind '"'
+unbind %
+
+# New window in current path
+bind c new-window -c "#{pane_current_path}"
+
+# # Quick pane switching with Alt+arrow (no prefix needed)
+# bind -n M-Left select-pane -L
+# bind -n M-Right select-pane -R
+# bind -n M-Up select-pane -U
+# bind -n M-Down select-pane -D
+#
+# # Quick window switching with Shift+arrow (no prefix needed)
+# bind -n S-Left previous-window
+# bind -n S-Right next-window
+#
+# # Kill pane without confirmation
+# bind x kill-pane
+
+# ================================
+# NEOVIM INTEGRATION
+# ================================
+
+# Smart pane switching with awareness of Vim splits
+# This allows seamless navigation between tmux panes and Neovim splits
+# is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+#     | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf)(diff)?$'"
+# bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
+# bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
+# bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
+# bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
+#
+# bind-key -T copy-mode-vi 'C-h' select-pane -L
+# bind-key -T copy-mode-vi 'C-j' select-pane -D
+# bind-key -T copy-mode-vi 'C-k' select-pane -U
+# bind-key -T copy-mode-vi 'C-l' select-pane -R
+#
+# ================================
+# STATUS BAR CUSTOMIZATION
+# ================================
+
+# Status bar position
+set -g status-position bottom
+
+# Status bar colors (optimized for Gruber Darker theme)
+set -g status-bg colour234    # Very dark gray background
+set -g status-fg colour15     # White/light gray text
+
+# Left side of status bar (Gruber Darker colors)
+set -g status-left-length 20
+set -g status-left '#[fg=colour234,bg=colour11,bold] #S #[fg=colour11,bg=colour236] '
+
+# Right side of status bar (Gruber Darker colors)
+set -g status-right-length 50
+set -g status-right '#[fg=colour234,bg=colour10,bold] %d/%m #[fg=colour234,bg=colour11,bold] %H:%M:%S '
+
+# Window status format (Gruber Darker colors)
+setw -g window-status-current-format ' #I#[fg=colour15]:#[fg=colour11]#W#[fg=colour10]#F '
+setw -g window-status-format ' #I#[fg=colour8]:#[fg=colour15]#W#[fg=colour8]#F '
+
+# Pane border colors (Gruber Darker colors)
+set -g pane-border-style fg=colour8           # Inactive borders - dark gray
+set -g pane-active-border-style fg=colour11   # Active border - bright yellow
+
+# ================================
+# USEFUL SHORTCUTS
+# ================================
+
+# Reload tmux config with prefix + r
+bind r source-file ~/.tmux.conf \; display-message "Config reloaded!"
+
+# # Session management shortcuts
+# bind S choose-session
+# bind N new-session
+#
+# # Clear screen and history with prefix + Ctrl+l
+# bind C-l send-keys 'clear' \; send-keys 'Enter' \; clear-history
+#
+# # Toggle synchronize panes (type in all panes at once)
+# bind e setw synchronize-panes
+
+# Quick access to common commands
+# bind g new-window -n 'lg'
+# bind m new-window -n 'man' 'man tmux'
+
+# ================================
+# ADDITIONAL SETTINGS
+# ================================
+
+# Don't rename windows automatically
+set-option -g allow-rename off
+
+# Activity monitoring
+setw -g monitor-activity on
+set -g visual-activity on
+
+# Aggressive resize (useful when multiple users connect to same session)
+setw -g aggressive-resize on
+
+# Enable clipboard integration (works with system clipboard)
+set -g set-clipboard on
