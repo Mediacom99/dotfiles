@@ -6,7 +6,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     if vim.v.shell_error ~= 0 then
         vim.api.nvim_echo({
             { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-            { out,                            "WarningMsg" },
+            { out, "WarningMsg" },
             { "\nPress any key to exit..." },
         }, true, {})
         vim.fn.getchar()
@@ -34,7 +34,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 vim.opt.pumheight = 10
-vim.o.background = 'dark'
+
 
 local servers = { "lua_ls", "bashls", "clangd" }
 local lazy = require("lazy")
@@ -58,23 +58,23 @@ lazy.setup({
             end
         },
         -- {
-        --     'neanias/everforest-nvim',
-        --     version = false,
-        --     lazy = false,
-        --     priority = 1000,
-        --     config = function()
-        --         require("everforest").setup({
-        --             background = "hard"
-        --         })
-        --         vim.cmd([[colorscheme everforest]])
-        --         vim.o.background = "dark"
-        --     end,
+        --   'neanias/everforest-nvim',
+        --   version = false,
+        --   lazy = false,
+        --   priority = 1000,
+        --   config = function()
+        --     require("everforest").setup({
+        --         background = "hard"
+        --     })
+        --     vim.cmd([[colorscheme everforest]])
+        --     vim.o.background = "dark"
+        --   end,
         -- },
         {
             'akinsho/toggleterm.nvim',
             version = "*",
-            config = function()
-                require("toggleterm").setup {
+            config = function ()
+               require("toggleterm").setup{
                     open_mapping = [[<C-p>]],
                     direction = "vertical",
                     size = 80,
@@ -84,10 +84,10 @@ lazy.setup({
         {
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
-            config = function()
+            config = function ()
                 local configs = require("nvim-treesitter.configs")
                 configs.setup({
-                    ensure_installed = { "c", "lua", "vim", "vimdoc", "javascript", "html", "zig", "bash" },
+                    ensure_installed = { "c", "lua", "vim", "vimdoc", "javascript", "html", "zig", "bash"},
                     sync_install = false,
                     highlight = { enable = true },
                     indent = { enable = true },
@@ -95,8 +95,7 @@ lazy.setup({
             end
         },
         {
-            'nvim-telescope/telescope.nvim',
-            tag = '0.1.8',
+            'nvim-telescope/telescope.nvim', tag = '0.1.8',
             dependencies = { 'nvim-lua/plenary.nvim' },
             config = function()
                 require('telescope').setup({
@@ -144,14 +143,14 @@ lazy.setup({
                     settings = {
                         Lua = {
                             diagnostics = {
-                                globals = { 'vim', 'os' }
+                                globals = {'vim', 'os'}
                             }
                         }
                     }
-                }, { capabilities = blink_capabilities })
+                }, {capabilities = blink_capabilities})
                 lspconf.zls.setup({
                     capabilities = blink_capabilities,
-                    cmd = { "/home/mediacom/zls/zig-out/bin/zls" },
+                    cmd = {"/home/mediacom/zls/zig-out/bin/zls"},
                     settings = {
                         zls = {
                             semantic_token = "full;",
@@ -160,9 +159,48 @@ lazy.setup({
                     }
                 })
                 -- lspconf.clangd.setup({capabilities = blink_capabilities})
-                lspconf.basedpyright.setup({ capabilities = blink_capabilities })
+                lspconf.basedpyright.setup({capabilities = blink_capabilities})
             end
         },
+        -- {
+        --     "hrsh7th/nvim-cmp",
+        --     dependencies = {
+        --         "hrsh7th/cmp-nvim-lsp",
+        --         "hrsh7th/cmp-buffer",
+        --         "hrsh7th/cmp-path",
+        --         "hrsh7th/cmp-cmdline",
+        --         "hrsh7th/cmp-nvim-lua",
+        --     },
+        --     config = function()
+        --         local configs = require("cmp")
+        --         configs.setup({
+        --             sources = configs.config.sources({
+        --                 { name = "nvim_lsp" },
+        --                 { name = "buffer" },
+        --                 { name = "nvim_lua" },
+        --                 -- { name = "cmdline" },
+        --             }),
+        --             windows = {
+        --                 completion = configs.config.window.bordered(),
+        --                 documentation = configs.config.window.bordered(),
+        --             },
+        --             mapping = configs.mapping.preset.insert({
+        --                     ['<CR>'] = configs.mapping.confirm({ select = true }),
+        --                 }),
+        --         })
+        --         configs.setup.cmdline({'/', '?'}, {
+        --             mapping = configs.mapping.preset.cmdline(),
+        --             sources = {
+        --                 { name = 'buffer' }
+        --             }
+        --         })
+        --         for _, value in ipairs(servers) do
+        --             require('lspconfig')[value].setup {
+        --                 capabilities = require("cmp_nvim_lsp").default_capabilities()
+        --             }
+        --         end
+        --     end
+        -- },
         {
             "folke/which-key.nvim",
             event = "VeryLazy",
@@ -178,100 +216,63 @@ lazy.setup({
             },
         },
         {
-            'saghen/blink.cmp',
-            dependencies = { 'rafamadriz/friendly-snippets' },
-            version = '1.*',
-            ---@module 'blink.cmp'
-            opts = {
-                -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
-                -- 'super-tab' for mappings similar to vscode (tab to accept)
-                -- 'enter' for enter to accept
-                -- 'none' for no mappings
-                --
-                -- All presets have the following mappings:
-                -- C-space: Open menu or open docs if already open
-                -- C-n/C-p or Up/Down: Select next/previous item
-                -- C-e: Hide menu
-                -- C-k: Toggle signature help (if signature.enabled = true)
-                --
-                -- See :h blink-cmp-config-keymap for defining your own keymap
-                keymap = { preset = 'enter' },
-                appearance = {
-                    nerd_font_variant = 'mono'
-                },
-                completion = { documentation = { auto_show = true } },
-                sources = {
-                    default = { 'lsp', 'path', 'snippets', 'buffer' },
-                },
-                signature = { enabled = true, window = { show_documentation = false } },
-                fuzzy = { implementation = "rust" }
-            },
-            opts_extend = { "sources.default" }
-        },
-        {
-            "NeogitOrg/neogit",
-            dependencies = {
-                "nvim-lua/plenary.nvim",         -- required
-                "sindrets/diffview.nvim",        -- optional - Diff integration
-                -- Only one of these is needed.
-                "nvim-telescope/telescope.nvim", -- optional
-            },
-        },
-        {
-            'stevearc/conform.nvim',
-            opts = {},
-            config = function()
-                local conform = require("conform")
-                conform.setup({
-                    lua = { "stylua" },
-                    zig = { "zigfmt" },
-                    format_on_save = {
-                        timeout_ms = 500,
-                        lsp_format = "fallback",
+            "nvim-tree/nvim-tree.lua",
+              version = "*",
+              lazy = true,
+              dependencies = {
+                "nvim-tree/nvim-web-devicons",
+              },
+              config = function()
+                local nvimtree = require("nvim-tree")
+                nvimtree.setup({
+                    filters = {
+                        dotfiles = false,
                     },
                 })
-            end
+              end,
         },
         {
-            "mikavilpas/yazi.nvim",
-            event = "VeryLazy",
-            dependencies = {
-                { "nvim-lua/plenary.nvim", lazy = true },
+          'saghen/blink.cmp',
+          dependencies = { 'rafamadriz/friendly-snippets' },
+          version = '1.*',
+          ---@module 'blink.cmp'
+          ---@type blink.cmp.Config
+          opts = {
+            -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
+            -- 'super-tab' for mappings similar to vscode (tab to accept)
+            -- 'enter' for enter to accept
+            -- 'none' for no mappings
+            --
+            -- All presets have the following mappings:
+            -- C-space: Open menu or open docs if already open
+            -- C-n/C-p or Up/Down: Select next/previous item
+            -- C-e: Hide menu
+            -- C-k: Toggle signature help (if signature.enabled = true)
+            --
+            -- See :h blink-cmp-config-keymap for defining your own keymap
+            keymap = { preset = 'enter' },
+            appearance = {
+              nerd_font_variant = 'mono'
             },
-            keys = {
-                -- 👇 in this section, choose your own keymappings!
-                {
-                    "<leader>-",
-                    mode = { "n", "v" },
-                    "<cmd>Yazi<cr>",
-                    desc = "Open yazi at the current file",
-                },
-                {
-                    -- Open in the current working directory
-                    "<leader>cw",
-                    "<cmd>Yazi cwd<cr>",
-                    desc = "Open the file manager in nvim's working directory",
-                },
-                {
-                    "<c-up>",
-                    "<cmd>Yazi toggle<cr>",
-                    desc = "Resume the last yazi session",
-                },
+            completion = { documentation = { auto_show = true } },
+            sources = {
+              default = { 'lsp', 'path', 'snippets', 'buffer' },
             },
-            opts = {
-                -- if you want to open yazi instead of netrw, see below for more info
-                open_for_directories = false,
-                keymaps = {
-                    show_help = "<f1>",
-                },
-            },
-            -- 👇 if you use `open_for_directories=true`, this is recommended
-            init = function()
-                -- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
-                -- vim.g.loaded_netrw = 1
-                vim.g.loaded_netrwPlugin = 1
-            end,
+            signature = { enabled = true, window = { show_documentation = false} },
+            fuzzy = { implementation = "rust" }
+          },
+          opts_extend = { "sources.default" }
         },
+        -- {
+        --     -- This plugin reconstructs completion item and 
+        --     -- applies treesitter highlight queries 
+        --     -- to produce variable-size highlight ranges.
+        --     "xzbdmw/colorful-menu.nvim",
+        --     config = function ()
+        --         require("colorful-menu").setup({})
+        --     end
+        -- }
+
     },
     -- Configure any other settings here. See the documentation for more details.
     -- colorscheme that will be used when installing plugins.
@@ -284,43 +285,45 @@ lazy.setup({
 -- Keymaps
 -- TODO move this into telescope config
 local telescope = require('telescope.builtin')
+local nvimtree = require('nvim-tree.api')
 local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = 'Telescope find files' }, opts)
-vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = 'Telescope live grep' }, opts)
-vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = 'Telescope buffers' }, opts)
-vim.keymap.set('n', '<leader>fh', telescope.help_tags, { desc = 'Telescope help tags' }, opts)
+vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', telescope.help_tags, { desc = 'Telescope help tags' })
+vim.keymap.set('n', '<leader>e', nvimtree.tree.toggle, {desc = 'NvimTree toggle'})
 
 -- Lsp keybinds
-vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' }, opts)
-vim.keymap.set('n', 'gD', vim.lsp.buf.definition, { desc = 'Telescope: go to definition' }, opts)
+vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
+vim.keymap.set('n', 'gD', vim.lsp.buf.definition, {desc = 'Telescope: go to definition'})
 -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic' }, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic' }, opts)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, {desc = 'Go to previous diagnostic'})
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, {desc = 'Go to next diagnostic'})
 
 vim.keymap.set('n', 'grr', telescope.lsp_references, {
-    desc = 'Find references',
-}, opts)
+    desc = 'Find references'
+})
 
 -- Remap key to exit terminal mode
 vim.keymap.set('t', '<C-x>', [[<C-\><C-n>]], { noremap = true, silent = true })
 
 -- Normal mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('n', '<A-h>', '<C-w>h', opts)
--- vim.keymap.set('n', '<A-j>', '<C-w>j', opts)
--- vim.keymap.set('n', '<A-k>', '<C-w>k', opts)
--- vim.keymap.set('n', '<A-l>', '<C-w>l', opts)
+vim.keymap.set('n', '<A-h>', '<C-w>h')
+vim.keymap.set('n', '<A-j>', '<C-w>j')
+vim.keymap.set('n', '<A-k>', '<C-w>k')
+vim.keymap.set('n', '<A-l>', '<C-w>l')
 
 -- Insert mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('i', '<A-h>', '<C-\\><C-N><C-w>h', opts)
--- vim.keymap.set('i', '<A-j>', '<C-\\><C-N><C-w>j', opts)
--- vim.keymap.set('i', '<A-k>', '<C-\\><C-N><C-w>k', opts)
--- vim.keymap.set('i', '<A-l>', '<C-\\><C-N><C-w>l', opts)
+vim.keymap.set('i', '<A-h>', '<C-\\><C-N><C-w>h')
+vim.keymap.set('i', '<A-j>', '<C-\\><C-N><C-w>j')
+vim.keymap.set('i', '<A-k>', '<C-\\><C-N><C-w>k')
+vim.keymap.set('i', '<A-l>', '<C-\\><C-N><C-w>l')
 
 -- Terminal mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h', opts)
--- vim.keymap.set('t', '<A-j>', '<C-\\><C-N><C-w>j', opts)
--- vim.keymap.set('t', '<A-k>', '<C-\\><C-N><C-w>k', opts)
--- vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l', opts)
+vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h')
+vim.keymap.set('t', '<A-j>', '<C-\\><C-N><C-w>j')
+vim.keymap.set('t', '<A-k>', '<C-\\><C-N><C-w>k')
+vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l')
 
 vim.diagnostic.config({
     virtual_text = true,
