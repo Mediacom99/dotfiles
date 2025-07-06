@@ -1,5 +1,5 @@
 function zx-hook
-    set zx "$HOME/zx0.0.0"
+    set zx "zx: ADD STDIN INPUT TO USE WITH FISH"
 
     if not test -x $zx
         echo "zx executable not found or not executable: $zx" >&2
