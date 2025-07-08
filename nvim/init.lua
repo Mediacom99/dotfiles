@@ -40,21 +40,26 @@ local servers = { "lua_ls", "bashls", "clangd" }
 local lazy = require("lazy")
 lazy.setup({
     spec = {
+        -- {
+        --     "blazkowolf/gruber-darker.nvim",
+        --     lazy = false,
+        --     priority = 1000,
+        --     opts = {
+        --         bold = true,
+        --         italic = {
+        --             strings = false,
+        --             comments = false,
+        --             operators = false,
+        --             folds = false,
+        --         }
+        --     },
+        -- },
         {
-            "blazkowolf/gruber-darker.nvim",
-            lazy = false,
+            "catppuccin/nvim",
+            name = "catppuccin",
             priority = 1000,
-            opts = {
-                bold = true,
-                italic = {
-                    strings = false,
-                    comments = false,
-                    operators = false,
-                    folds = false,
-                }
-            },
             config = function()
-                vim.cmd.colorscheme("gruber-darker")
+                vim.cmd.colorscheme("catppuccin-mocha")
             end
         },
         -- {
@@ -161,6 +166,13 @@ lazy.setup({
                 })
                 -- lspconf.clangd.setup({capabilities = blink_capabilities})
                 lspconf.basedpyright.setup({ capabilities = blink_capabilities })
+                lspconf.ts_ls.setup({
+                    init_options = {
+                        tsserver = {
+                            maxTsServerMemory = 8196,
+                        },
+                    },
+                })
             end
         },
         {
