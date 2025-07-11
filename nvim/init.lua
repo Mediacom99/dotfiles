@@ -34,41 +34,49 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 vim.opt.pumheight = 10
-vim.o.background = 'dark'
+
+-- Set colorscheme to default
+vim.cmd.colorscheme('default')
+
 
 local servers = { "lua_ls", "bashls", "clangd" }
 local lazy = require("lazy")
 lazy.setup({
     spec = {
+        -- {
+        --     "blazkowolf/gruber-darker.nvim",
+        --     lazy = false,
+        --     priority = 1000,
+        --     opts = {
+        --         bold = true,
+        --         italic = {
+        --             strings = false,
+        --             comments = false,
+        --             operators = false,
+        --             folds = false,
+        --         }
+        --     },
+        -- },
         {
-            "blazkowolf/gruber-darker.nvim",
-            lazy = false,
+            "catppuccin/nvim",
+            name = "catppuccin",
             priority = 1000,
-            opts = {
-                bold = true,
-                italic = {
-                    strings = false,
-                    comments = false,
-                    operators = false,
-                    folds = false,
-                }
-            },
             config = function()
-                vim.cmd.colorscheme("gruber-darker")
+                vim.cmd.colorscheme("catppuccin-mocha")
             end
         },
         -- {
-        --     'neanias/everforest-nvim',
-        --     version = false,
-        --     lazy = false,
-        --     priority = 1000,
-        --     config = function()
-        --         require("everforest").setup({
-        --             background = "hard"
-        --         })
-        --         vim.cmd([[colorscheme everforest]])
-        --         vim.o.background = "dark"
-        --     end,
+        --   'neanias/everforest-nvim',
+        --   version = false,
+        --   lazy = false,
+        --   priority = 1000,
+        --   config = function()
+        --     require("everforest").setup({
+        --         background = "hard"
+        --     })
+        --     vim.cmd([[colorscheme everforest]])
+        --     vim.o.background = "dark"
+        --   end,
         -- },
         {
             'akinsho/toggleterm.nvim',
@@ -161,6 +169,12 @@ lazy.setup({
                 })
                 -- lspconf.clangd.setup({capabilities = blink_capabilities})
                 lspconf.basedpyright.setup({ capabilities = blink_capabilities })
+                lspconf.ts_ls.setup({
+                    capabilities = blink_capabilities,
+                    init_options = {
+                        maxTsServerMemory = 4096,
+                    }
+                })
             end
         },
         {
@@ -178,10 +192,27 @@ lazy.setup({
             },
         },
         {
+            "nvim-tree/nvim-tree.lua",
+            version = "*",
+            lazy = true,
+            dependencies = {
+                "nvim-tree/nvim-web-devicons",
+            },
+            config = function()
+                local nvimtree = require("nvim-tree")
+                nvimtree.setup({
+                    filters = {
+                        dotfiles = false,
+                    },
+                })
+            end,
+        },
+        {
             'saghen/blink.cmp',
             dependencies = { 'rafamadriz/friendly-snippets' },
             version = '1.*',
             ---@module 'blink.cmp'
+            ---@type blink.cmp.Config
             opts = {
                 -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
                 -- 'super-tab' for mappings similar to vscode (tab to accept)
@@ -209,69 +240,77 @@ lazy.setup({
             opts_extend = { "sources.default" }
         },
         {
-            "NeogitOrg/neogit",
-            dependencies = {
-                "nvim-lua/plenary.nvim",         -- required
-                "sindrets/diffview.nvim",        -- optional - Diff integration
-                -- Only one of these is needed.
-                "nvim-telescope/telescope.nvim", -- optional
-            },
-        },
-        {
-            'stevearc/conform.nvim',
-            opts = {},
+            "mfussenegger/nvim-lint",
+            lazy = true,
+            event = { "BufReadPre", "BufNewFile" },
+            ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
             config = function()
-                local conform = require("conform")
-                conform.setup({
-                    lua = { "stylua" },
-                    zig = { "zigfmt" },
-                    format_on_save = {
-                        timeout_ms = 500,
-                        lsp_format = "fallback",
-                    },
+                -- TODO: use project local linter and prettier
+                local lint = require("lint")
+
+                -- Configure eslint_d to use project-local version
+                lint.linters.eslint_d.cmd = function()
+                    local local_eslint = vim.fn.fnamemodify('./node_modules/.bin/eslint_d', ':p')
+                    if vim.fn.executable(local_eslint) == 1 then
+                        return local_eslint
+                    end
+                    return 'eslint_d'
+                end
+                vim.env.ESLINT_D_PPID = vim.fn.getpid()
+                vim.env.ESLINT_USE_FLAT_CONFIG = "false" -- Force legacy config by setting false
+                lint.linters_by_ft = {
+                    javascript = { "eslint_d" },
+                    typescript = { "eslint_d" },
+                    javascriptreact = { "eslint_d" },
+                    typescriptreact = { "eslint_d" },
+                }
+                local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+                vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+                    group = lint_augroup,
+                    callback = function()
+                        lint.try_lint()
+                    end,
                 })
-            end
+            end,
         },
         {
-            "mikavilpas/yazi.nvim",
-            event = "VeryLazy",
-            dependencies = {
-                { "nvim-lua/plenary.nvim", lazy = true },
-            },
+            "stevearc/conform.nvim",
+            event = { "BufWritePre" },
+            cmd = { "ConformInfo" },
             keys = {
-                -- 👇 in this section, choose your own keymappings!
                 {
-                    "<leader>-",
-                    mode = { "n", "v" },
-                    "<cmd>Yazi<cr>",
-                    desc = "Open yazi at the current file",
-                },
-                {
-                    -- Open in the current working directory
-                    "<leader>cw",
-                    "<cmd>Yazi cwd<cr>",
-                    desc = "Open the file manager in nvim's working directory",
-                },
-                {
-                    "<c-up>",
-                    "<cmd>Yazi toggle<cr>",
-                    desc = "Resume the last yazi session",
+                    -- Customize or remove this keymap to your liking
+                    "<leader>F",
+                    function()
+                        require("conform").format({ async = true })
+                    end,
+                    mode = "",
+                    desc = "Format buffer",
                 },
             },
             opts = {
-                -- if you want to open yazi instead of netrw, see below for more info
-                open_for_directories = false,
-                keymaps = {
-                    show_help = "<f1>",
+                -- Define your formatters
+                formatters_by_ft = {
+                    lua = { "stylua" },
+                    javascript = { "prettierd", "prettier", stop_after_first = true },
+                    javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+                    typescript = { "prettierd", "prettier", stop_after_first = true },
+                    typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+                },
+                -- Set default options
+                default_format_opts = {
+                    lsp_format = "fallback",
+                },
+                -- Set up format-on-save
+                format_on_save = { timeout_ms = 500 },
+                -- Customize formatters
+                formatters = {
+                    shfmt = {
+                        prepend_args = { "-i", "2" },
+                    },
                 },
             },
-            -- 👇 if you use `open_for_directories=true`, this is recommended
-            init = function()
-                -- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
-                -- vim.g.loaded_netrw = 1
-                vim.g.loaded_netrwPlugin = 1
-            end,
-        },
+        }
     },
     -- Configure any other settings here. See the documentation for more details.
     -- colorscheme that will be used when installing plugins.
@@ -284,49 +323,56 @@ lazy.setup({
 -- Keymaps
 -- TODO move this into telescope config
 local telescope = require('telescope.builtin')
+local nvimtree = require('nvim-tree.api')
 local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = 'Telescope find files' }, opts)
-vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = 'Telescope live grep' }, opts)
-vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = 'Telescope buffers' }, opts)
-vim.keymap.set('n', '<leader>fh', telescope.help_tags, { desc = 'Telescope help tags' }, opts)
+vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', telescope.help_tags, { desc = 'Telescope help tags' })
+vim.keymap.set('n', '<leader>e', nvimtree.tree.toggle, { desc = 'NvimTree toggle' })
 
 -- Lsp keybinds
-vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' }, opts)
-vim.keymap.set('n', 'gD', vim.lsp.buf.definition, { desc = 'Telescope: go to definition' }, opts)
+vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
+vim.keymap.set('n', 'gD', vim.lsp.buf.definition, { desc = 'Telescope: go to definition' })
 -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic' }, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic' }, opts)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic' })
 
 vim.keymap.set('n', 'grr', telescope.lsp_references, {
-    desc = 'Find references',
-}, opts)
+    desc = 'Find references'
+})
 
+vim.keymap.set('n', '<leader>L', vim.diagnostic.open_float, { desc = 'Open diagnostic floating window' })
 -- Remap key to exit terminal mode
 vim.keymap.set('t', '<C-x>', [[<C-\><C-n>]], { noremap = true, silent = true })
 
 -- Normal mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('n', '<A-h>', '<C-w>h', opts)
--- vim.keymap.set('n', '<A-j>', '<C-w>j', opts)
--- vim.keymap.set('n', '<A-k>', '<C-w>k', opts)
--- vim.keymap.set('n', '<A-l>', '<C-w>l', opts)
+vim.keymap.set('n', '<A-h>', '<C-w>h')
+vim.keymap.set('n', '<A-j>', '<C-w>j')
+vim.keymap.set('n', '<A-k>', '<C-w>k')
+vim.keymap.set('n', '<A-l>', '<C-w>l')
 
 -- Insert mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('i', '<A-h>', '<C-\\><C-N><C-w>h', opts)
--- vim.keymap.set('i', '<A-j>', '<C-\\><C-N><C-w>j', opts)
--- vim.keymap.set('i', '<A-k>', '<C-\\><C-N><C-w>k', opts)
--- vim.keymap.set('i', '<A-l>', '<C-\\><C-N><C-w>l', opts)
+vim.keymap.set('i', '<A-h>', '<C-\\><C-N><C-w>h')
+vim.keymap.set('i', '<A-j>', '<C-\\><C-N><C-w>j')
+vim.keymap.set('i', '<A-k>', '<C-\\><C-N><C-w>k')
+vim.keymap.set('i', '<A-l>', '<C-\\><C-N><C-w>l')
 
 -- Terminal mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h', opts)
--- vim.keymap.set('t', '<A-j>', '<C-\\><C-N><C-w>j', opts)
--- vim.keymap.set('t', '<A-k>', '<C-\\><C-N><C-w>k', opts)
--- vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l', opts)
+vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h')
+vim.keymap.set('t', '<A-j>', '<C-\\><C-N><C-w>j')
+vim.keymap.set('t', '<A-k>', '<C-\\><C-N><C-w>k')
+vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l')
 
 vim.diagnostic.config({
     virtual_text = true,
     virtual_lines = false,
     signs = false,
     update_in_insert = true,
+    float = {
+        max_width = 80,
+        wrap = true,
+    }
 })
 
 -- Custom commands
