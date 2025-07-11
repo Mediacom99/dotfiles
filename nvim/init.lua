@@ -36,7 +36,7 @@ vim.opt.termguicolors = true
 vim.opt.pumheight = 10
 vim.o.background = 'dark'
 
-local servers = { "lua_ls", "bashls", "clangd" }
+local servers = { "lua_ls", "bashls", "fish_lsp" }
 local lazy = require("lazy")
 lazy.setup({
     spec = {
@@ -75,17 +75,6 @@ lazy.setup({
         --         vim.o.background = "dark"
         --     end,
         -- },
-        {
-            'akinsho/toggleterm.nvim',
-            version = "*",
-            config = function()
-                require("toggleterm").setup {
-                    open_mapping = [[<C-p>]],
-                    direction = "vertical",
-                    size = 80,
-                }
-            end
-        },
         {
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
@@ -145,6 +134,7 @@ lazy.setup({
                     automatic_enable = false,
                 })
 
+                lspconf.fish_lsp.setup({})
                 lspconf.lua_ls.setup({
                     settings = {
                         Lua = {
@@ -220,15 +210,15 @@ lazy.setup({
             },
             opts_extend = { "sources.default" }
         },
-        {
-            "NeogitOrg/neogit",
-            dependencies = {
-                "nvim-lua/plenary.nvim",         -- required
-                "sindrets/diffview.nvim",        -- optional - Diff integration
-                -- Only one of these is needed.
-                "nvim-telescope/telescope.nvim", -- optional
-            },
-        },
+        -- {
+        --     "NeogitOrg/neogit",
+        --     dependencies = {
+        --         "nvim-lua/plenary.nvim",         -- required
+        --         "sindrets/diffview.nvim",        -- optional - Diff integration
+        --         -- Only one of these is needed.
+        --         "nvim-telescope/telescope.nvim", -- optional
+        --     },
+        -- },
         {
             'stevearc/conform.nvim',
             opts = {},
@@ -285,12 +275,7 @@ lazy.setup({
             end,
         },
     },
-    -- Configure any other settings here. See the documentation for more details.
-    -- colorscheme that will be used when installing plugins.
-    -- install = { colorscheme = { "habamax" } },
-    -- automatically check for plugin updates
-    checker = { enabled = true },
-    rocks = { enabled = true },
+    install = { colorscheme = { "catppuccin-mocha" } },
 })
 
 -- Keymaps
@@ -313,27 +298,6 @@ vim.keymap.set('n', 'grr', telescope.lsp_references, {
     desc = 'Find references',
 }, opts)
 
--- Remap key to exit terminal mode
-vim.keymap.set('t', '<C-x>', [[<C-\><C-n>]], { noremap = true, silent = true })
-
--- Normal mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('n', '<A-h>', '<C-w>h', opts)
--- vim.keymap.set('n', '<A-j>', '<C-w>j', opts)
--- vim.keymap.set('n', '<A-k>', '<C-w>k', opts)
--- vim.keymap.set('n', '<A-l>', '<C-w>l', opts)
-
--- Insert mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('i', '<A-h>', '<C-\\><C-N><C-w>h', opts)
--- vim.keymap.set('i', '<A-j>', '<C-\\><C-N><C-w>j', opts)
--- vim.keymap.set('i', '<A-k>', '<C-\\><C-N><C-w>k', opts)
--- vim.keymap.set('i', '<A-l>', '<C-\\><C-N><C-w>l', opts)
-
--- Terminal mode: Alt+h/j/k/l to move between splits
--- vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h', opts)
--- vim.keymap.set('t', '<A-j>', '<C-\\><C-N><C-w>j', opts)
--- vim.keymap.set('t', '<A-k>', '<C-\\><C-N><C-w>k', opts)
--- vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l', opts)
-
 vim.diagnostic.config({
     virtual_text = true,
     virtual_lines = false,
@@ -341,7 +305,6 @@ vim.diagnostic.config({
     update_in_insert = true,
 })
 
--- Custom commands
 -- Open telescope find files command at startup
 -- vim.api.nvim_create_autocmd("VimEnter", {
 --     callback = function()
