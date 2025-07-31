@@ -10,6 +10,7 @@ bind \cg zx-hook
 fish_add_path --path /home/mediacom/zig-x86_64-linux-0.14.1 || true
 fish_add_path --path /opt/homebrew/bin || true
 fish_add_path --path /opt/homebrew/sbin || true
+fish_add_path --path /opt/homebrew/opt/binutils/bin || true
 
 fish_add_path /opt/homebrew/opt/postgresql@17/bin
 fish_add_path /opt/homebrew/opt/curl/bin
@@ -33,4 +34,6 @@ alias brave='/Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser'
 # Export variables
 set -gx SHELL fish
 set -gx EDITOR nvim
+set -gx LDFLAGS "-L/opt/homebrew/opt/binutils/lib"
+set -gx CPPFLAGS "-I/opt/homebrew/opt/binutils/include"
 
