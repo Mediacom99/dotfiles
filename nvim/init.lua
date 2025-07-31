@@ -175,6 +175,7 @@ lazy.setup({
                         maxTsServerMemory = 4096,
                     }
                 })
+                lspconf.tailwindcss.setup({})
             end
         },
         {
@@ -257,7 +258,7 @@ lazy.setup({
                     return 'eslint_d'
                 end
                 vim.env.ESLINT_D_PPID = vim.fn.getpid()
-                vim.env.ESLINT_USE_FLAT_CONFIG = "true" -- Force legacy config by setting false
+                vim.env.ESLINT_USE_FLAT_CONFIG = "false" -- Force legacy config by setting false
                 lint.linters_by_ft = {
                     javascript = { "eslint_d" },
                     typescript = { "eslint_d" },
@@ -400,6 +401,10 @@ vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h')
 vim.keymap.set('t', '<A-j>', '<C-\\><C-N><C-w>j')
 vim.keymap.set('t', '<A-k>', '<C-\\><C-N><C-w>k')
 vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l')
+
+-- Remap increment/decrement to different keys
+vim.keymap.set('n', '<leader>a', '<C-a>', { desc = 'Increment number' })
+vim.keymap.set('n', '<leader>x', '<C-x>', { desc = 'Decrement number' })
 
 vim.diagnostic.config({
     virtual_text = true,
