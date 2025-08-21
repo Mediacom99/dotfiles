@@ -16,6 +16,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Setting mapleader and vim.opt
+vim.o.swapfile = false
+vim.o.signcolumn = "yes"
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 vim.opt.expandtab = true
@@ -25,6 +27,7 @@ vim.opt.softtabstop = 4
 vim.opt.smartindent = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.number = true
+vim.opt.relativenumber = true
 vim.opt.smartcase = true
 vim.opt.incsearch = true
 vim.opt.colorcolumn = "100"
@@ -35,6 +38,7 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 vim.opt.pumheight = 10
 vim.o.background = 'dark'
+-- vim.o.winborder = "rounded"
 
 local servers = { "lua_ls", "bashls", "fish_lsp" }
 local lazy = require("lazy")
@@ -274,6 +278,49 @@ lazy.setup({
                 vim.g.loaded_netrwPlugin = 1
             end,
         },
+        {
+            'mrcjkb/rustaceanvim',
+            version = '^6',
+            lazy = false,
+        },
+
+        {
+            "folke/trouble.nvim",
+            opts = {}, -- for default options, refer to the configuration section for custom setup.
+            cmd = "Trouble",
+            keys = {
+                {
+                    "<leader>xx",
+                    "<cmd>Trouble diagnostics toggle<cr>",
+                    desc = "Diagnostics (Trouble)",
+                },
+                {
+                    "<leader>xX",
+                    "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                    desc = "Buffer Diagnostics (Trouble)",
+                },
+                {
+                    "<leader>cs",
+                    "<cmd>Trouble symbols toggle focus=false<cr>",
+                    desc = "Symbols (Trouble)",
+                },
+                {
+                    "<leader>cl",
+                    "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                    desc = "LSP Definitions / references / ... (Trouble)",
+                },
+                {
+                    "<leader>xL",
+                    "<cmd>Trouble loclist toggle<cr>",
+                    desc = "Location List (Trouble)",
+                },
+                {
+                    "<leader>xQ",
+                    "<cmd>Trouble qflist toggle<cr>",
+                    desc = "Quickfix List (Trouble)",
+                },
+            },
+        }
     },
     install = { colorscheme = { "catppuccin-mocha" } },
 })

@@ -46,3 +46,8 @@ set -gx EDITOR nvim
 
 # Append to PATH
 fish_add_path --path /home/mediacom/zig-x86_64-linux-0.14.1 || true
+fish_add_path --path /home/mediacom/.yarn/bin || true
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
