@@ -7,11 +7,11 @@ set -U fish_history_max_size 100000
 set fish_greeting
 
 function f
-    /usr/bin/nvim $argv
+    command /usr/bin/nvim $argv
 end
 
 function lg
-    /usr/bin/lazygit $argv
+    command /usr/bin/lazygit $argv
 end
 
 function grep
@@ -20,28 +20,28 @@ end
 
 function ls
     # eza -l --icons --time-style=long-iso --group-directories-first --sort=size $argv
-    ls -la
+    command ls -la
 end
 
 function la
     # eza -lah --icons --time-style=long-iso --group-directories-first --sort=size $argv
-    ls -lah
+    command ls -lah
 end
 
 function lt
-    eza -la --tree -L 2 --icons --time-style=long-iso --group-directories-first --sort=size $argv
+    command eza -la --tree -L 2 --icons --time-style=long-iso --group-directories-first --sort=size $argv
 end
 
 function ltn
-    eza -lah --tree --icons --time-style=long-iso --group-directories-first --sort=size $argv
+    command eza -lah --tree --icons --time-style=long-iso --group-directories-first --sort=size $argv
 end
 
 function update
-    yay -Syu $argv
+    command yay -Syu $argv
 end
 
 function download
-    yay -Sy $argv
+    command yay -Sy $argv
 end
 
 # Export variables
