@@ -19,11 +19,13 @@ function grep
 end
 
 function ls
-    eza -l --icons --time-style=long-iso --group-directories-first --sort=size $argv
+    # eza -l --icons --time-style=long-iso --group-directories-first --sort=size $argv
+    ls -la
 end
 
 function la
-    eza -lah --icons --time-style=long-iso --group-directories-first --sort=size $argv
+    # eza -lah --icons --time-style=long-iso --group-directories-first --sort=size $argv
+    ls -lah
 end
 
 function lt
@@ -36,6 +38,10 @@ end
 
 function update
     yay -Syu $argv
+end
+
+function download
+    yay -Sy $argv
 end
 
 # Export variables
