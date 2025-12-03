@@ -20,12 +20,12 @@ end
 
 function ls
     # eza -l --icons --time-style=long-iso --group-directories-first --sort=size $argv
-    command ls -la
+    command ls -lh --color=auto $argv
 end
 
 function la
     # eza -lah --icons --time-style=long-iso --group-directories-first --sort=size $argv
-    command ls -lah
+    command ls -lah --color=auto $argv
 end
 
 function lt

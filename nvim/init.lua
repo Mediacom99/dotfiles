@@ -44,28 +44,32 @@ local servers = { "lua_ls", "bashls", "fish_lsp" }
 local lazy = require("lazy")
 lazy.setup({
     spec = {
-        -- {
-        --     "blazkowolf/gruber-darker.nvim",
-        --     lazy = false,
-        --     priority = 1000,
-        --     opts = {
-        --         bold = true,
-        --         italic = {
-        --             strings = false,
-        --             comments = false,
-        --             operators = false,
-        --             folds = false,
-        --         }
-        --     },
-        -- },
         {
-            "catppuccin/nvim",
-            name = "catppuccin",
+            "blazkowolf/gruber-darker.nvim",
+            lazy = false,
             priority = 1000,
+            opts = {
+                bold = true,
+                italic = {
+                    strings = false,
+                    comments = false,
+                    operators = false,
+                    folds = false,
+                }
+            },
             config = function()
-                vim.cmd.colorscheme("catppuccin-mocha")
-            end
+                vim.cmd.colorscheme("gruber-darker")
+                vim.o.background = "dark"
+            end,
         },
+        -- {
+        --     "catppuccin/nvim",
+        --     name = "catppuccin",
+        --     priority = 1000,
+        --     config = function()
+        --         vim.cmd.colorscheme("catppuccin-macchiato")
+        --     end
+        -- },
         -- {
         --     'neanias/everforest-nvim',
         --     version = false,
@@ -138,7 +142,46 @@ lazy.setup({
                     automatic_enable = false,
                 })
 
+                -- lspconf.harper_ls.setup({})
                 lspconf.fish_lsp.setup({})
+                local on_attach = function(client, bufnr)
+                    require 'completion'.on_attach(client)
+                    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+                end
+                lspconf.rust_analyzer.setup({
+                    {
+                        on_attach = on_attach,
+                        settings = {
+                            ["rust-analyzer"] = {
+                                -- lru = {
+                                --     capacity = 256,
+                                -- },
+                                -- semanticTokens = {
+                                --     enable = true,
+                                -- },
+                                -- cachePriming = {
+                                --     enable = true,
+                                --     numThreads = 8
+                                -- },
+                                imports = {
+                                    granularity = {
+                                        group = "workspace",
+                                    },
+                                    prefix = "self",
+                                },
+                                cargo = {
+                                    buildScripts = {
+                                        enable = true,
+                                    },
+                                },
+                                procMacro = {
+                                    enable = true
+                                },
+                            }
+                        }
+                    }
+                })
+                lspconf.gopls.setup({})
                 lspconf.lua_ls.setup({
                     settings = {
                         Lua = {
@@ -158,7 +201,7 @@ lazy.setup({
                         },
                     }
                 })
-                -- lspconf.clangd.setup({capabilities = blink_capabilities})
+                lspconf.clangd.setup({ capabilities = blink_capabilities })
                 lspconf.basedpyright.setup({ capabilities = blink_capabilities })
                 lspconf.ts_ls.setup({
                     init_options = {
@@ -201,11 +244,21 @@ lazy.setup({
                 -- C-k: Toggle signature help (if signature.enabled = true)
                 --
                 -- See :h blink-cmp-config-keymap for defining your own keymap
-                keymap = { preset = 'enter' },
+                keymap = { preset = 'enter', ['C-y'] = { 'accept' } },
                 appearance = {
                     nerd_font_variant = 'mono'
                 },
-                completion = { documentation = { auto_show = true } },
+                completion = {
+                    documentation = { auto_show = true },
+                    trigger = {
+                        prefetch_on_insert = true,
+                        show_on_insert_on_trigger_character = false,
+                        show_on_trigger_character = false,
+                    },
+                    accept = {
+                        auto_brackets = { enabled = true },
+                    }
+                },
                 sources = {
                     default = { 'lsp', 'path', 'snippets', 'buffer' },
                 },
@@ -278,12 +331,11 @@ lazy.setup({
                 vim.g.loaded_netrwPlugin = 1
             end,
         },
-        {
-            'mrcjkb/rustaceanvim',
-            version = '^6',
-            lazy = false,
-        },
-
+        -- {
+        --     'mrcjkb/rustaceanvim',
+        --     version = '^6',
+        --     lazy = false,
+        -- },
         {
             "folke/trouble.nvim",
             opts = {}, -- for default options, refer to the configuration section for custom setup.
@@ -340,17 +392,49 @@ vim.keymap.set('n', 'gD', vim.lsp.buf.definition, { desc = 'Telescope: go to def
 -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic' }, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic' }, opts)
+vim.keymap.set('n', '<leader>L', vim.diagnostic.open_float, { desc = 'Show diagnostic under cursor' }, opts)
 
 vim.keymap.set('n', 'grr', telescope.lsp_references, {
     desc = 'Find references',
 }, opts)
 
 vim.diagnostic.config({
-    virtual_text = true,
+    -- virtual_text = {
+    --     prefix = '●', -- Prefix character
+    --     source = 'if_many', -- Show source when multiple exist
+    --     spacing = 4, -- Spacing from text
+    --     format = function(diagnostic)
+    --         -- Custom formatting function
+    --         return diagnostic.message
+    --     end
+    -- },
+    -- virtual_lines = {
+    --     only_current_line = false,
+    --     highlight_whole_line = true,
+    --     spacing = 1, --number of blank lines between diagnostics
+    --     prefix = '■ '
+    -- },
+    virtual_text = false,
     virtual_lines = false,
-    signs = false,
-    update_in_insert = true,
+    float = {
+        scope = 'line',
+        border = 'single', -- single, solid, double, bold, none
+        source = false,
+        header = 'Diagnostic',
+        prefix = '',
+        suffix = '',
+        focusable = true,
+        format = function(diagnostic)
+            -- return string.format("  %s:\n  %s", diagnostic.source, diagnostic.message)
+            return string.format("%s", diagnostic.message)
+        end
+    },
+    signs = true,
+    underline = true,
+    severity_sort = true,
+    update_in_insert = false
 })
+
 
 -- Open telescope find files command at startup
 -- vim.api.nvim_create_autocmd("VimEnter", {
