@@ -15,6 +15,32 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Local custom functions
+
+-- Automatically set flat config if present in current folder
+local function has_flat_config()
+    local uv = vim.loop
+    local cwd = uv.cwd()
+
+    local flat_config_patterns = {
+        "eslint.config.js",
+        "eslint.config.cjs",
+        "eslint.config.mjs",
+        "eslint.config.ts",
+        "eslint.config.mts",
+        "eslint.config.cts"
+    }
+
+    for _, pattern in ipairs(flat_config_patterns) do
+        local filepath = cwd .. "/" .. pattern
+        local stat = uv.fs_stat(filepath)
+        if stat and stat.type == "file" then
+            return true
+        end
+    end
+    return false
+end
+
 -- Setting mapleader and vim.opt
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
@@ -34,6 +60,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 vim.opt.pumheight = 10
+vim.opt.guicursor = ""
 
 -- Set colorscheme to default
 vim.cmd.colorscheme('default')
@@ -258,7 +285,9 @@ lazy.setup({
                     return 'eslint_d'
                 end
                 vim.env.ESLINT_D_PPID = vim.fn.getpid()
-                vim.env.ESLINT_USE_FLAT_CONFIG = "false" -- Force legacy config by setting false
+                -- Force legacy config by setting false
+                vim.env.ESLINT_USE_FLAT_CONFIG = has_flat_config() and "true" or
+                    "false"
                 lint.linters_by_ft = {
                     javascript = { "eslint_d" },
                     typescript = { "eslint_d" },
@@ -379,6 +408,7 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnos
 vim.keymap.set('n', 'grr', telescope.lsp_references, {
     desc = 'Find references'
 })
+vim.keymap.set('n', '<leader>fr', telescope.resume, { desc = 'Telescope resume' }, opts)
 
 vim.keymap.set('n', '<leader>L', vim.diagnostic.open_float, { desc = 'Open diagnostic floating window' })
 -- Remap key to exit terminal mode
