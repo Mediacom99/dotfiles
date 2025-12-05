@@ -163,7 +163,6 @@ lazy.setup({
                 "williamboman/mason-lspconfig.nvim",
             },
             config = function()
-                local lspconf = require("lspconfig")
                 local mason = require("mason")
                 local mason_lspconf = require("mason-lspconfig")
                 local blink_capabilities = require("blink.cmp").get_lsp_capabilities()
@@ -175,7 +174,7 @@ lazy.setup({
                     automatic_enable = false,
                 })
 
-                lspconf.lua_ls.setup({
+                vim.lsp.config("lua_ls", {
                     settings = {
                         Lua = {
                             diagnostics = {
@@ -184,7 +183,8 @@ lazy.setup({
                         }
                     }
                 }, { capabilities = blink_capabilities })
-                lspconf.zls.setup({
+                vim.lsp.config("rust-analyzer", { capabilities = blink_capabilities })
+                vim.lsp.config("zls", {
                     capabilities = blink_capabilities,
                     cmd = { "/home/mediacom/zls/zig-out/bin/zls" },
                     settings = {
@@ -194,15 +194,15 @@ lazy.setup({
                         },
                     }
                 })
-                -- lspconf.clangd.setup({capabilities = blink_capabilities})
-                lspconf.basedpyright.setup({ capabilities = blink_capabilities })
-                lspconf.ts_ls.setup({
+                vim.lsp.config("clangd", {capabilities = blink_capabilities} )
+                vim.lsp.config("basedpyright", { capabilities = blink_capabilities })
+                vim.lsp.config("ts_ls", {
                     capabilities = blink_capabilities,
                     init_options = {
                         maxTsServerMemory = 4096,
                     }
                 })
-                lspconf.tailwindcss.setup({})
+                vim.lsp.config("tailwindcss",{ capabilities = blink_capabilities })
             end
         },
         {
