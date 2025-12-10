@@ -1,0 +1,8 @@
+font-family = JetBrainsMonoNL NFM Regular
+font-size = 16
+theme = Catppuccin Macchiato
+command = "/opt/homebrew/bin/fish"
+shell-integration = fish
+working-directory = "/Users/edoardo"
+window-height = 9999
+window-width = 9999
