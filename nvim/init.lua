@@ -157,9 +157,8 @@ lazy.setup({
             }
         },
         {
-            "neovim/nvim-lspconfig",
+            "williamboman/mason.nvim",
             dependencies = {
-                "williamboman/mason.nvim",
                 "williamboman/mason-lspconfig.nvim",
             },
             config = function()
@@ -174,7 +173,13 @@ lazy.setup({
                     automatic_enable = false,
                 })
 
-                vim.lsp.config("lua_ls", {
+
+                -- blink completion plugin capabilities for all lsp servers
+                vim.lsp.config('*', {
+                    capabilities = blink_capabilities,
+                })
+
+                vim.lsp.config('lua_ls', {
                     settings = {
                         Lua = {
                             diagnostics = {
@@ -182,10 +187,8 @@ lazy.setup({
                             }
                         }
                     }
-                }, { capabilities = blink_capabilities })
-                vim.lsp.config("rust-analyzer", { capabilities = blink_capabilities })
-                vim.lsp.config("zls", {
-                    capabilities = blink_capabilities,
+                })
+                vim.lsp.config('zls', {
                     cmd = { "/home/mediacom/zls/zig-out/bin/zls" },
                     settings = {
                         zls = {
@@ -194,15 +197,34 @@ lazy.setup({
                         },
                     }
                 })
-                vim.lsp.config("clangd", {capabilities = blink_capabilities} )
-                vim.lsp.config("basedpyright", { capabilities = blink_capabilities })
-                vim.lsp.config("ts_ls", {
-                    capabilities = blink_capabilities,
+                vim.lsp.config("clangd", {
+                    cmd = {
+                        'clangd',
+                        '--clang-tidy',
+                        '--background-index',
+                        '--header-insertion=never'
+                    },
+                })
+                vim.lsp.config('ts_ls', {
                     init_options = {
                         maxTsServerMemory = 4096,
                     }
                 })
-                vim.lsp.config("tailwindcss",{ capabilities = blink_capabilities })
+                vim.lsp.config('elixirls', {})
+                vim.lsp.config('tailwindcss', {})
+                vim.lsp.config('basedpyright', {})
+                vim.lsp.config('rust_analyzer', {})
+
+                vim.lsp.enable({
+                    "clangd",
+                    "lua_ls",
+                    "rust_analyzer",
+                    "zls",
+                    "elixirls",
+                    "tailwindcss",
+                    "basedpyright",
+                    "ts_ls",
+                })
             end
         },
         {
@@ -446,14 +468,3 @@ vim.diagnostic.config({
         wrap = true,
     }
 })
-
--- Custom commands
--- Open telescope find files command at startup
--- vim.api.nvim_create_autocmd("VimEnter", {
---     callback = function()
---         -- Only open telescope if no files were specified
---         if #vim.fn.argv() == 0 then
---             require("telescope.builtin").find_files()
---         end
---     end,
--- })
