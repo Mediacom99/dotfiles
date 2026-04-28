@@ -65,8 +65,7 @@ vim.opt.guicursor = ""
 -- Set colorscheme to default
 vim.cmd.colorscheme('default')
 
-
-local servers = { "lua_ls", "bashls", "clangd" }
+local servers = { "lua_ls", "bashls", "clangd", "rust_analyzer", "basedpyright" }
 local lazy = require("lazy")
 lazy.setup({
     spec = {
@@ -118,14 +117,22 @@ lazy.setup({
         },
         {
             "nvim-treesitter/nvim-treesitter",
+            branch = "main",
+            lazy = false,
             build = ":TSUpdate",
             config = function()
-                local configs = require("nvim-treesitter.configs")
-                configs.setup({
-                    ensure_installed = { "c", "lua", "vim", "vimdoc", "javascript", "html", "zig", "bash" },
-                    sync_install = false,
-                    highlight = { enable = true },
-                    indent = { enable = true },
+                require("nvim-treesitter").install({
+                    "c", "lua", "vim", "vimdoc", "javascript", "html", "zig", "bash",
+                    "markdown", "markdown_inline",
+                })
+                vim.api.nvim_create_autocmd("FileType", {
+                    callback = function(ev)
+                        local ft = vim.bo[ev.buf].filetype
+                        local lang = vim.treesitter.language.get_lang(ft) or ft
+                        if pcall(vim.treesitter.start, ev.buf, lang) then
+                            vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                        end
+                    end,
                 })
             end
         },
@@ -133,12 +140,18 @@ lazy.setup({
             'nvim-telescope/telescope.nvim',
             tag = '0.1.8',
             dependencies = { 'nvim-lua/plenary.nvim' },
+            keys = {
+                { '<leader>ff', function() require('telescope.builtin').find_files() end,     desc = 'Find files' },
+                { '<leader>fg', function() require('telescope.builtin').live_grep() end,      desc = 'Live grep' },
+                { '<leader>fb', function() require('telescope.builtin').buffers() end,        desc = 'Buffers' },
+                { '<leader>fh', function() require('telescope.builtin').help_tags() end,      desc = 'Help tags' },
+                { '<leader>fr', function() require('telescope.builtin').resume() end,         desc = 'Telescope resume' },
+                { 'grr',        function() require('telescope.builtin').lsp_references() end, desc = 'Find references' },
+            },
             config = function()
                 require('telescope').setup({
                     pickers = {
-                        find_files = {
-                            hidden = false,
-                        }
+                        find_files = { hidden = false },
                     },
                     extensions = {
                         file_browser = {
@@ -173,13 +186,15 @@ lazy.setup({
                     automatic_enable = false,
                 })
 
-
-                -- blink completion plugin capabilities for all lsp servers
                 vim.lsp.config('*', {
                     capabilities = blink_capabilities,
                 })
 
-                vim.lsp.config('lua_ls', {
+                -- Use table assignment syntax, not function call
+                vim.lsp.config.lua_ls = {
+                    cmd = { 'lua-language-server' },
+                    filetypes = { 'lua' },
+                    root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
                     settings = {
                         Lua = {
                             diagnostics = {
@@ -187,35 +202,73 @@ lazy.setup({
                             }
                         }
                     }
-                })
-                vim.lsp.config('zls', {
-                    cmd = { "/home/mediacom/zls/zig-out/bin/zls" },
+                }
+
+                vim.lsp.config.zls = {
+                    cmd = { "zls" },
+                    filetypes = { 'zig', 'zir' },
+                    root_markers = { 'build.zig', 'zls.json', '.git' },
                     settings = {
                         zls = {
-                            semantic_token = "full;",
+                            semantic_token = "full",
                             warn_style = "true",
                         },
                     }
-                })
-                vim.lsp.config("clangd", {
+                }
+
+                vim.lsp.config.clangd = {
                     cmd = {
                         'clangd',
                         '--clang-tidy',
                         '--background-index',
                         '--header-insertion=never'
                     },
-                })
-                vim.lsp.config('ts_ls', {
+                    filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda', 'proto' },
+                    root_markers = { 'compile_commands.json', 'compile_flags.txt', '.clangd', '.git' },
+                }
+
+                vim.lsp.config.ts_ls = {
+                    cmd = { 'typescript-language-server', '--stdio' },
+                    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+                    root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
                     init_options = {
                         maxTsServerMemory = 4096,
                     }
-                })
-                vim.lsp.config('elixirls', {})
-                vim.lsp.config('tailwindcss', {})
-                vim.lsp.config('basedpyright', {})
-                vim.lsp.config('rust_analyzer', {})
+                }
+
+                vim.lsp.config.basedpyright = {
+                    cmd = { 'basedpyright-langserver', '--stdio' },
+                    filetypes = { 'python' },
+                    root_markers = { '.git', 'pyproject.toml' },
+                    single_file_support = true,
+                }
+
+                vim.lsp.config.rust_analyzer = {
+                    cmd = { 'rust-analyzer' },
+                    filetypes = { 'rust' },
+                    root_markers = { 'Cargo.toml', '.git' },
+                }
+
+                vim.lsp.config.elixirls = {
+                    cmd = { 'elixir-ls' },
+                    filetypes = { 'elixir', 'eelixir', 'heex', 'surface' },
+                    root_markers = { 'mix.exs', '.git' },
+                }
+
+                vim.lsp.config.gopls = {
+                    cmd = { 'gopls' },
+                    filetypes = { 'go' },
+                    root_markers = { 'go.mod', '.git' },
+                }
+
+                vim.lsp.config.tailwindcss = {
+                    cmd = { 'tailwindcss-language-server', '--stdio' },
+                    filetypes = { 'html', 'css', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+                    root_markers = { 'tailwind.config.js', 'tailwind.config.ts', '.git' },
+                }
 
                 vim.lsp.enable({
+                    "gopls",
                     "clangd",
                     "lua_ls",
                     "rust_analyzer",
@@ -245,15 +298,15 @@ lazy.setup({
             "nvim-tree/nvim-tree.lua",
             version = "*",
             lazy = true,
+            keys = {
+                { '<leader>e', function() require('nvim-tree.api').tree.toggle() end, desc = 'NvimTree toggle' },
+            },
             dependencies = {
                 "nvim-tree/nvim-web-devicons",
             },
             config = function()
-                local nvimtree = require("nvim-tree")
-                nvimtree.setup({
-                    filters = {
-                        dotfiles = false,
-                    },
+                require("nvim-tree").setup({
+                    filters = { dotfiles = false },
                 })
             end,
         },
@@ -295,17 +348,14 @@ lazy.setup({
             event = { "BufReadPre", "BufNewFile" },
             ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
             config = function()
-                -- TODO: use project local linter and prettier
+                -- Check that eslint_d is installed
+                if vim.fn.executable('eslint_d') ~= 1 then
+                    vim.notify("eslint_d not found. Install with: yarn global add eslint_d", vim.log.levels.WARN)
+                    return
+                end
+
                 local lint = require("lint")
 
-                -- Configure eslint_d to use project-local version
-                lint.linters.eslint_d.cmd = function()
-                    local local_eslint = vim.fn.fnamemodify('./node_modules/.bin/eslint_d', ':p')
-                    if vim.fn.executable(local_eslint) == 1 then
-                        return local_eslint
-                    end
-                    return 'eslint_d'
-                end
                 vim.env.ESLINT_D_PPID = vim.fn.getpid()
                 -- Force legacy config by setting false
                 vim.env.ESLINT_USE_FLAT_CONFIG = has_flat_config() and "true" or
@@ -409,28 +459,13 @@ lazy.setup({
     rocks = { enabled = true },
 })
 
--- Keymaps
--- TODO move this into telescope config
-local telescope = require('telescope.builtin')
-local nvimtree = require('nvim-tree.api')
-local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = 'Telescope find files' })
-vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = 'Telescope buffers' })
-vim.keymap.set('n', '<leader>fh', telescope.help_tags, { desc = 'Telescope help tags' })
-vim.keymap.set('n', '<leader>e', nvimtree.tree.toggle, { desc = 'NvimTree toggle' })
-
 -- Lsp keybinds
-vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
-vim.keymap.set('n', 'gD', vim.lsp.buf.definition, { desc = 'Telescope: go to definition' })
+vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Telescope: go to definition' })
 -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic' })
 
-vim.keymap.set('n', 'grr', telescope.lsp_references, {
-    desc = 'Find references'
-})
-vim.keymap.set('n', '<leader>fr', telescope.resume, { desc = 'Telescope resume' }, opts)
 
 vim.keymap.set('n', '<leader>L', vim.diagnostic.open_float, { desc = 'Open diagnostic floating window' })
 -- Remap key to exit terminal mode
