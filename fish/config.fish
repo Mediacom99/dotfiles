@@ -60,3 +60,7 @@ set -gx FNM_ARCH "arm64";
 # set -gx LDFLAGS "-L/opt/homebrew/opt/binutils/lib"
 # set -gx CPPFLAGS "-I/opt/homebrew/opt/binutils/include"
 
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init2.fish 2>/dev/null || :
