@@ -1,0 +1,25 @@
+# work-profile.local.fish  —  TEMPLATE
+#
+# Copy this to ~/.config/fish/work-profile.local.fish and fill in your values.
+# That real file is machine-local and gitignored — it never gets committed.
+# It is read by conf.d/work-profile.fish (auto-switch) and functions/kclaude.fish.
+#
+#   cp ~/.config/fish/work-profile.local.fish.example ~/.config/fish/work-profile.local.fish
+#
+# With no local file present, the profile switcher is a no-op (everything stays
+# personal) and `kclaude` prints a "not configured" message.
+
+# --- work profile ---
+set -g WORKPROF_ROOT             "$HOME/Workspaces/Acme"     # cwd under here -> work profile
+set -g WORKPROF_CLAUDE_DIR       "$HOME/.claude-acme"        # full Claude Code config dir
+set -g WORKPROF_CLAUDE_LITE_DIR  "$HOME/.claude-acme-lite"   # lite config dir (kclaude default)
+set -g WORKPROF_GH_DIR           "$HOME/.config/gh-acme"     # gh CLI config dir (work account)
+set -g WORKPROF_GIT_NAME         "Your Name"
+set -g WORKPROF_GIT_EMAIL        "you@acme.com"
+set -g WORKPROF_LABEL            "acme"                       # shown in the switch banner
+
+# --- personal fallback (used outside WORKPROF_ROOT) ---
+set -g WORKPROF_PERSONAL_CLAUDE_DIR  "$HOME/.claude"
+set -g WORKPROF_PERSONAL_GH_DIR      "$HOME/.config/gh"
+set -g WORKPROF_PERSONAL_GIT_NAME    "Your Personal Handle"
+set -g WORKPROF_PERSONAL_GIT_EMAIL   "you@personal.com"

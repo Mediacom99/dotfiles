@@ -1,1 +1,4 @@
 .DS_Store
+
+# machine-local work-profile secrets (paths, work email, client name) — never commit
+work-profile.local.fish
