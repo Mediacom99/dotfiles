@@ -46,7 +46,7 @@ function __workprof_apply --argument-names profile
 
     switch "$profile"
         case work
-            set -gx CLAUDE_CONFIG_DIR "$WORKPROF_CLAUDE_DIR"
+            set -gx CLAUDE_CONFIG_DIR "$WORKPROF_CLAUDE_DIR$WORKPROF_ACCT"
             set -gx GH_CONFIG_DIR "$WORKPROF_GH_DIR"
             set -gx GIT_AUTHOR_NAME "$WORKPROF_GIT_NAME"
             set -gx GIT_COMMITTER_NAME "$WORKPROF_GIT_NAME"

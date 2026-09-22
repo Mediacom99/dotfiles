@@ -44,7 +44,7 @@ function kclaude --description 'Launch Claude Code on the work account in ANY fo
 
     # --- Claude config dir: lite (default) or full ---
     if test $use_full -eq 1
-        set -a pairs CLAUDE_CONFIG_DIR="$WORKPROF_CLAUDE_DIR"
+        set -a pairs CLAUDE_CONFIG_DIR="$WORKPROF_CLAUDE_DIR$WORKPROF_ACCT"
         set note "full work config"
     else
         set -a pairs CLAUDE_CONFIG_DIR="$WORKPROF_CLAUDE_LITE_DIR"

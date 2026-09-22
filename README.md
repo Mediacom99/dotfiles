@@ -21,6 +21,7 @@ tmux/      tmux config
 | `fish/conf.d/rustup.fish` | sources `~/.cargo/env.fish` |
 | `fish/conf.d/work-profile.fish` | per-directory work/personal profile switcher (see below) |
 | `fish/functions/kclaude.fish` | launch Claude Code on the work account in any folder (see below) |
+| `fish/functions/kacct.fish` | pick which work Claude account (1 or 2) this shell uses (see below) |
 | `fish/functions/zx-hook.fish` | commandline hook for the `zx` helper |
 
 Files in `conf.d/` are auto-sourced by fish on startup; files in `functions/`
@@ -70,3 +71,14 @@ your shell or other terminals (it's child-scoped via `env`). It reads the same
 Flags combine, e.g. `kclaude --full --gh`. The lite config dir has its own
 login — run `kclaude` once and `/login`. Add `.claude/memory/` to a project's
 gitignore so lite memory isn't committed.
+
+### `kacct` — two work Claude accounts
+
+Claude Code keys its Keychain login by a hash of `CLAUDE_CONFIG_DIR`, so a
+second account needs a second config dir: `$WORKPROF_CLAUDE_DIR-2`, a real
+directory whose entries symlink back to the main one (settings, skills,
+plugins, projects/memory, history) except `.claude.json`, which stays
+per-account. `kacct 1|2` sets `WORKPROF_ACCT` (`""` or `-2`) and
+`CLAUDE_CONFIG_DIR` in the current shell; `work-profile.fish` and
+`kclaude --full` append `$WORKPROF_ACCT`, so the choice survives `cd`.
+`kacct` alone prints the active account. First use: `kacct 2; claude auth login`.
