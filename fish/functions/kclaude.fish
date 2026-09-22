@@ -47,14 +47,16 @@ function kclaude --description 'Launch Claude Code on the work account in ANY fo
         set -a pairs CLAUDE_CONFIG_DIR="$WORKPROF_CLAUDE_DIR$WORKPROF_ACCT"
         set note "full work config"
     else
-        set -a pairs CLAUDE_CONFIG_DIR="$WORKPROF_CLAUDE_LITE_DIR"
+        # kacct's account suffix applies here too; the suffixed lite dir needs
+        # a one-time login on first use.
+        set -a pairs CLAUDE_CONFIG_DIR="$WORKPROF_CLAUDE_LITE_DIR$WORKPROF_ACCT"
         # Route auto-memory into the launch project's own folder (absolute path,
         # computed now). Prefer the git root so worktrees/subdirs of one repo
         # share a memory dir; fall back to cwd for non-repo folders.
         set -l projroot (command git -C "$PWD" rev-parse --show-toplevel 2>/dev/null)
         test -n "$projroot"; or set projroot "$PWD"
         set -a preargs --settings "{\"autoMemoryDirectory\": \"$projroot/.claude/memory\"}"
-        set note "lite (work account; memory -> $projroot/.claude/memory)"
+        set note "lite ($WORKPROF_CLAUDE_LITE_DIR$WORKPROF_ACCT; memory -> $projroot/.claude/memory)"
     end
 
     # --- GitHub side: personal (default) or work (--gh) ---
