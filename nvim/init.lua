@@ -65,7 +65,7 @@ vim.opt.guicursor = ""
 -- Set colorscheme to default
 vim.cmd.colorscheme('default')
 
-local servers = { "lua_ls", "bashls", "clangd", "rust_analyzer", "basedpyright" }
+local servers = { "lua_ls" }
 local lazy = require("lazy")
 lazy.setup({
     spec = {
@@ -123,7 +123,7 @@ lazy.setup({
             config = function()
                 require("nvim-treesitter").install({
                     "c", "lua", "vim", "vimdoc", "javascript", "html", "zig", "bash",
-                    "markdown", "markdown_inline",
+                    "markdown", "markdown_inline", "go", "gomod", "gosum",
                 })
                 vim.api.nvim_create_autocmd("FileType", {
                     callback = function(ev)
@@ -257,8 +257,11 @@ lazy.setup({
 
                 vim.lsp.config.gopls = {
                     cmd = { 'gopls' },
-                    filetypes = { 'go' },
+                    filetypes = { 'go', 'gomod', 'gosum' },
                     root_markers = { 'go.mod', '.git' },
+                    settings = {
+                        gopls = { gofumpt = true },
+                    },
                 }
 
                 vim.lsp.config.tailwindcss = {
