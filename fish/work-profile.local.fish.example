@@ -18,6 +18,12 @@ set -g WORKPROF_GIT_NAME         "Your Name"
 set -g WORKPROF_GIT_EMAIL        "you@acme.com"
 set -g WORKPROF_LABEL            "acme"                       # shown in the switch banner
 
+# --- codex (used by functions/kcodex.fish) ---
+set -g WORKPROF_TECH_SUBDIR          "acme-workspace"   # technical entry point under WORKPROF_ROOT
+set -g WORKPROF_BIZ_SUBDIR           "acme-customers"   # business entry point under WORKPROF_ROOT
+set -g WORKPROF_CODEX_TECH_PROFILE   "acme-technical"   # [permissions."..."] name in ~/.codex/config.toml
+set -g WORKPROF_CODEX_BIZ_PROFILE    "acme-business"
+
 # --- personal fallback (used outside WORKPROF_ROOT) ---
 set -g WORKPROF_PERSONAL_CLAUDE_DIR  "$HOME/.claude"
 set -g WORKPROF_PERSONAL_GH_DIR      "$HOME/.config/gh"
