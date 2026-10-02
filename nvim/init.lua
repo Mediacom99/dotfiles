@@ -146,6 +146,7 @@ lazy.setup({
                 { '<leader>fb', function() require('telescope.builtin').buffers() end,        desc = 'Buffers' },
                 { '<leader>fh', function() require('telescope.builtin').help_tags() end,      desc = 'Help tags' },
                 { '<leader>fr', function() require('telescope.builtin').resume() end,         desc = 'Telescope resume' },
+                { '<leader>fd', function() require('telescope.builtin').diagnostics() end,    desc = 'Diagnostics' },
                 { 'grr',        function() require('telescope.builtin').lsp_references() end, desc = 'Find references' },
             },
             config = function()
