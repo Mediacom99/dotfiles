@@ -19,7 +19,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Automatically set flat config if present in current folder
 local function has_flat_config()
-    local uv = vim.loop
+    local uv = vim.uv
     local cwd = uv.cwd()
 
     local flat_config_patterns = {
@@ -51,8 +51,8 @@ vim.opt.softtabstop = 4
 vim.opt.smartindent = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.number = true
+vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.opt.incsearch = true
 vim.opt.colorcolumn = "100"
 vim.opt.shortmess:append("I")
 vim.opt.scrolloff = 16
@@ -61,9 +61,6 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 vim.opt.pumheight = 10
 vim.opt.guicursor = ""
-
--- Set colorscheme to default
-vim.cmd.colorscheme('default')
 
 local servers = { "lua_ls" }
 local lazy = require("lazy")
@@ -110,6 +107,7 @@ lazy.setup({
             config = function()
                 require("toggleterm").setup {
                     open_mapping = [[<C-p>]],
+                    insert_mappings = false,
                     direction = "vertical",
                     size = 80,
                 }
@@ -124,8 +122,10 @@ lazy.setup({
                 require("nvim-treesitter").install({
                     "c", "lua", "vim", "vimdoc", "javascript", "html", "zig", "bash",
                     "markdown", "markdown_inline", "go", "gomod", "gosum",
+                    "typescript", "tsx", "python", "rust", "css", "json", "yaml", "toml",
                 })
                 vim.api.nvim_create_autocmd("FileType", {
+                    group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
                     callback = function(ev)
                         local ft = vim.bo[ev.buf].filetype
                         local lang = vim.treesitter.language.get_lang(ft) or ft
@@ -138,7 +138,7 @@ lazy.setup({
         },
         {
             'nvim-telescope/telescope.nvim',
-            tag = '0.1.8',
+            version = '*',
             dependencies = { 'nvim-lua/plenary.nvim' },
             keys = {
                 { '<leader>ff', function() require('telescope.builtin').find_files() end,     desc = 'Find files' },
@@ -150,16 +150,7 @@ lazy.setup({
                 { 'grr',        function() require('telescope.builtin').lsp_references() end, desc = 'Find references' },
             },
             config = function()
-                require('telescope').setup({
-                    pickers = {
-                        find_files = { hidden = false },
-                    },
-                    extensions = {
-                        file_browser = {
-                            hijack_netrw = true,
-                        },
-                    },
-                })
+                require('telescope').setup({})
             end
         },
         {
@@ -178,17 +169,11 @@ lazy.setup({
             config = function()
                 local mason = require("mason")
                 local mason_lspconf = require("mason-lspconfig")
-                local blink_capabilities = require("blink.cmp").get_lsp_capabilities()
                 mason.setup()
                 mason_lspconf.setup({
                     -- available servers: https://github.com/williamboman/mason-lspconfig.nvim
                     ensure_installed = servers,
-                    automatic_installation = true,
                     automatic_enable = false,
-                })
-
-                vim.lsp.config('*', {
-                    capabilities = blink_capabilities,
                 })
 
                 -- Use table assignment syntax, not function call
@@ -198,9 +183,11 @@ lazy.setup({
                     root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
                     settings = {
                         Lua = {
-                            diagnostics = {
-                                globals = { 'vim', 'os' }
-                            }
+                            runtime = { version = 'LuaJIT' },
+                            workspace = {
+                                checkThirdParty = false,
+                                library = { vim.env.VIMRUNTIME },
+                            },
                         }
                     }
                 }
@@ -212,7 +199,7 @@ lazy.setup({
                     settings = {
                         zls = {
                             semantic_token = "full",
-                            warn_style = "true",
+                            warn_style = true,
                         },
                     }
                 }
@@ -241,7 +228,6 @@ lazy.setup({
                     cmd = { 'basedpyright-langserver', '--stdio' },
                     filetypes = { 'python' },
                     root_markers = { '.git', 'pyproject.toml' },
-                    single_file_support = true,
                 }
 
                 vim.lsp.config.rust_analyzer = {
@@ -258,8 +244,8 @@ lazy.setup({
 
                 vim.lsp.config.gopls = {
                     cmd = { 'gopls' },
-                    filetypes = { 'go', 'gomod', 'gosum' },
-                    root_markers = { 'go.mod', '.git' },
+                    filetypes = { 'go', 'gomod', 'gowork', 'gosum' },
+                    root_markers = { 'go.work', 'go.mod', '.git' },
                     settings = {
                         gopls = { gofumpt = true },
                     },
@@ -271,7 +257,10 @@ lazy.setup({
                     root_markers = { 'tailwind.config.js', 'tailwind.config.ts', '.git' },
                 }
 
-                vim.lsp.enable({
+                -- Enable only the servers whose binary is installed (mason's bin is on PATH by now)
+                vim.lsp.enable(vim.tbl_filter(function(name)
+                    return vim.fn.executable(vim.lsp.config[name].cmd[1]) == 1
+                end, {
                     "gopls",
                     "clangd",
                     "lua_ls",
@@ -281,7 +270,7 @@ lazy.setup({
                     "tailwindcss",
                     "basedpyright",
                     "ts_ls",
-                })
+                }))
             end
         },
         {
@@ -301,7 +290,8 @@ lazy.setup({
         {
             "nvim-tree/nvim-tree.lua",
             version = "*",
-            lazy = true,
+            -- Loaded at startup so it replaces netrw for `nvim .` and `:e dir`
+            lazy = false,
             keys = {
                 { '<leader>e', function() require('nvim-tree.api').tree.toggle() end, desc = 'NvimTree toggle' },
             },
@@ -318,8 +308,6 @@ lazy.setup({
             'saghen/blink.cmp',
             dependencies = { 'rafamadriz/friendly-snippets' },
             version = '1.*',
-            ---@module 'blink.cmp'
-            ---@type blink.cmp.Config
             opts = {
                 -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
                 -- 'super-tab' for mappings similar to vscode (tab to accept)
@@ -348,9 +336,7 @@ lazy.setup({
         },
         {
             "mfussenegger/nvim-lint",
-            lazy = true,
             event = { "BufReadPre", "BufNewFile" },
-            ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
             config = function()
                 -- Check that eslint_d is installed
                 if vim.fn.executable('eslint_d') ~= 1 then
@@ -361,9 +347,6 @@ lazy.setup({
                 local lint = require("lint")
 
                 vim.env.ESLINT_D_PPID = vim.fn.getpid()
-                -- Force legacy config by setting false
-                vim.env.ESLINT_USE_FLAT_CONFIG = has_flat_config() and "true" or
-                    "false"
                 lint.linters_by_ft = {
                     javascript = { "eslint_d" },
                     typescript = { "eslint_d" },
@@ -374,6 +357,8 @@ lazy.setup({
                 vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
                     group = lint_augroup,
                     callback = function()
+                        -- Checked on every lint so it follows :cd; false forces the legacy config
+                        vim.env.ESLINT_USE_FLAT_CONFIG = has_flat_config() and "true" or "false"
                         lint.try_lint()
                     end,
                 })
@@ -460,15 +445,34 @@ lazy.setup({
     -- install = { colorscheme = { "habamax" } },
     -- automatically check for plugin updates
     checker = { enabled = true },
-    rocks = { enabled = true },
+    rocks = { enabled = false },
+})
+
+-- Go: organize imports before conform formats with gopls
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = vim.api.nvim_create_augroup("go_organize_imports", { clear = true }),
+    pattern = "*.go",
+    callback = function(ev)
+        local client = vim.lsp.get_clients({ bufnr = ev.buf, name = "gopls" })[1]
+        if not client then
+            return
+        end
+        local params = vim.tbl_extend("force", vim.lsp.util.make_range_params(0, client.offset_encoding), {
+            context = { only = { "source.organizeImports" }, diagnostics = {} },
+        })
+        local res = client:request_sync("textDocument/codeAction", params, 1000, ev.buf)
+        for _, action in ipairs(res and res.result or {}) do
+            if action.edit then
+                vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
+            end
+        end
+    end,
 })
 
 -- Lsp keybinds
 vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { desc = 'Lsp: go to declaration' })
-vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Telescope: go to definition' })
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Lsp: go to definition' })
 -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {desc = 'Lsp: go to implementation'})
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic' })
 
 
 vim.keymap.set('n', '<leader>L', vim.diagnostic.open_float, { desc = 'Open diagnostic floating window' })
@@ -495,13 +499,14 @@ vim.keymap.set('t', '<A-l>', '<C-\\><C-N><C-w>l')
 
 -- Remap increment/decrement to different keys
 vim.keymap.set('n', '<leader>a', '<C-a>', { desc = 'Increment number' })
-vim.keymap.set('n', '<leader>x', '<C-x>', { desc = 'Decrement number' })
+-- Not <leader>x: it is the prefix of the Trouble keys and would wait timeoutlen
+vim.keymap.set('n', '<leader>X', '<C-x>', { desc = 'Decrement number' })
 
 vim.diagnostic.config({
     virtual_text = true,
     virtual_lines = false,
     signs = false,
-    update_in_insert = true,
+    update_in_insert = false,
     float = {
         max_width = 80,
         wrap = true,
