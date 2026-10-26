@@ -80,26 +80,15 @@ lazy.setup({
         --         }
         --     },
         -- },
-        -- Colorscheme is picked after setup, from the macOS appearance
+        -- Colorscheme is set after setup; 'background' follows the macOS appearance
         {
-            "projekt0n/github-nvim-theme",
-            name = "github-theme",
+            "neanias/everforest-nvim",
+            version = false,
             lazy = false,
             priority = 1000,
+            main = "everforest",
+            opts = { background = "hard" },
         },
-        -- {
-        --   'neanias/everforest-nvim',
-        --   version = false,
-        --   lazy = false,
-        --   priority = 1000,
-        --   config = function()
-        --     require("everforest").setup({
-        --         background = "hard"
-        --     })
-        --     vim.cmd([[colorscheme everforest]])
-        --     vim.o.background = "dark"
-        --   end,
-        -- },
         {
             'akinsho/toggleterm.nvim',
             version = "*",
@@ -447,23 +436,27 @@ lazy.setup({
     rocks = { enabled = false },
 })
 
--- Match Rex's Merino themes (GitHub Light/Dark Default) and follow the macOS appearance.
+-- Everforest light/dark follows the macOS appearance, matching Rex's Everforest themes.
 -- Nvim's built-in detection asks the terminal (OSC 11), but Rex doesn't answer it and
 -- always reports dark, so read the system setting instead.
 if vim.fn.has("mac") == 1 then
     local appearance_cmd = { "defaults", "read", "-g", "AppleInterfaceStyle" }
-    local function apply_appearance(out)
-        local scheme = out.stdout:find("Dark") and "github_dark_default" or "github_light_default"
-        if vim.g.colors_name ~= scheme then
-            vim.cmd.colorscheme(scheme)
-        end
+    local function appearance(out)
+        return out.stdout:find("Dark") and "dark" or "light"
     end
-    apply_appearance(vim.system(appearance_cmd):wait())
+    -- Set explicitly so Nvim's own detection leaves it alone
+    vim.o.background = appearance(vim.system(appearance_cmd):wait())
     -- ponytail: polls every 3s; drop it once Rex answers OSC 11 (Nvim then switches on its own)
     vim.uv.new_timer():start(3000, 3000, vim.schedule_wrap(function()
-        vim.system(appearance_cmd, {}, vim.schedule_wrap(apply_appearance))
+        vim.system(appearance_cmd, {}, vim.schedule_wrap(function(out)
+            local bg = appearance(out)
+            if vim.o.background ~= bg then
+                vim.o.background = bg -- reloads the colorscheme
+            end
+        end))
     end))
 end
+vim.cmd.colorscheme("everforest")
 
 -- Go: organize imports before conform formats with gopls
 vim.api.nvim_create_autocmd("BufWritePre", {
