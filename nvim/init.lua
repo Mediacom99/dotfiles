@@ -62,24 +62,6 @@ vim.opt.termguicolors = true
 vim.opt.pumheight = 10
 vim.opt.guicursor = ""
 
--- Follow the macOS light/dark appearance. Nvim's built-in detection asks the terminal (OSC 11),
--- but Rex doesn't answer it and always reports dark, so read the system setting instead.
-if vim.fn.has("mac") == 1 then
-    local appearance_cmd = { "defaults", "read", "-g", "AppleInterfaceStyle" }
-    local function apply_appearance(out)
-        local bg = out.stdout:find("Dark") and "dark" or "light"
-        if vim.o.background ~= bg then
-            vim.o.background = bg
-        end
-    end
-    -- Sync at startup so the colorscheme loads with the right flavour
-    apply_appearance(vim.system(appearance_cmd):wait())
-    -- ponytail: polls every 3s; drop it once Rex answers OSC 11 (Nvim then switches on its own)
-    vim.uv.new_timer():start(3000, 3000, vim.schedule_wrap(function()
-        vim.system(appearance_cmd, {}, vim.schedule_wrap(apply_appearance))
-    end))
-end
-
 local servers = { "lua_ls" }
 local lazy = require("lazy")
 lazy.setup({
@@ -98,14 +80,12 @@ lazy.setup({
         --         }
         --     },
         -- },
+        -- Colorscheme is picked after setup, from the macOS appearance
         {
-            "catppuccin/nvim",
-            name = "catppuccin",
+            "projekt0n/github-nvim-theme",
+            name = "github-theme",
+            lazy = false,
             priority = 1000,
-            config = function()
-                -- Flavour follows 'background': latte when light, mocha when dark
-                vim.cmd.colorscheme("catppuccin")
-            end
         },
         -- {
         --   'neanias/everforest-nvim',
@@ -466,6 +446,24 @@ lazy.setup({
     checker = { enabled = true },
     rocks = { enabled = false },
 })
+
+-- Match Rex's Merino themes (GitHub Light/Dark Default) and follow the macOS appearance.
+-- Nvim's built-in detection asks the terminal (OSC 11), but Rex doesn't answer it and
+-- always reports dark, so read the system setting instead.
+if vim.fn.has("mac") == 1 then
+    local appearance_cmd = { "defaults", "read", "-g", "AppleInterfaceStyle" }
+    local function apply_appearance(out)
+        local scheme = out.stdout:find("Dark") and "github_dark_default" or "github_light_default"
+        if vim.g.colors_name ~= scheme then
+            vim.cmd.colorscheme(scheme)
+        end
+    end
+    apply_appearance(vim.system(appearance_cmd):wait())
+    -- ponytail: polls every 3s; drop it once Rex answers OSC 11 (Nvim then switches on its own)
+    vim.uv.new_timer():start(3000, 3000, vim.schedule_wrap(function()
+        vim.system(appearance_cmd, {}, vim.schedule_wrap(apply_appearance))
+    end))
+end
 
 -- Go: organize imports before conform formats with gopls
 vim.api.nvim_create_autocmd("BufWritePre", {
