@@ -73,4 +73,4 @@ fish_add_path -g "/Users/edoardo/.kimi-code/bin"
 test -f ~/.appstoreconnect/env.fish; and source ~/.appstoreconnect/env.fish
 
 # Scaleway CLI autocomplete initialization.
-eval (scw autocomplete script shell=fish)
+command -q scw; and eval (scw autocomplete script shell=fish)
