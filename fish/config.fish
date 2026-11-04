@@ -57,7 +57,7 @@ source ~/.orbstack/shell/init2.fish 2>/dev/null || :
 # kimi-code
 fish_add_path -g "$HOME/.kimi-code/bin"
 
-# App Store Connect credentials for fastlane (splitto-app). The values live
+# App Store Connect credentials for fastlane (slashy-app). The values live
 # outside this repo — it is public — next to the .p8 key they authenticate with.
 test -f ~/.appstoreconnect/env.fish; and source ~/.appstoreconnect/env.fish
 
