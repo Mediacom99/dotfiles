@@ -7,9 +7,10 @@ lives in its own top-level directory; copy or symlink the pieces you want into
 ```
 emacs/     Emacs config
 fish/      fish shell: config.fish, functions/, conf.d/
-ghostty/   Ghostty terminal config
-nvim/      Neovim config
-tmux/      tmux config
+ghostty/   Ghostty terminal config (symlink to ~/Library/Application Support/com.mitchellh.ghostty/config)
+nvim/      Neovim config (lazy.nvim, Everforest following macOS light/dark)
+rex/       Everforest Dark/Light Hard themes for Rex (Ghostty format, import in Rex)
+tmux/      tmux config (symlink tmux.conf to ~/.tmux.conf)
 ```
 
 ## fish
@@ -22,7 +23,9 @@ tmux/      tmux config
 | `fish/conf.d/work-profile.fish` | per-directory work/personal profile switcher (see below) |
 | `fish/functions/kclaude.fish` | launch Claude Code on the work account in any folder (see below) |
 | `fish/functions/kacct.fish` | pick which work Claude account (1 or 2) this shell uses (see below) |
-| `fish/functions/zx-hook.fish` | commandline hook for the `zx` helper |
+| `fish/functions/kcodex.fish` | launch Codex with the work technical/business profile, picked from the current directory or `--technical`/`--business` |
+| `fish/functions/envsource.fish` | `envsource [file]`: export `KEY=value` lines from a dotenv file (default `.env`); re-running unsets keys removed from the file |
+| `fish/work-profile.local.fish.example` | template for the gitignored machine-local work values |
 
 Files in `conf.d/` are auto-sourced by fish on startup; files in `functions/`
 are autoloaded on first call.

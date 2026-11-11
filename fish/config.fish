@@ -4,7 +4,6 @@ end
 
 set -U fish_history_max_size 100000
 set fish_greeting
-bind \cg zx-hook
 
 # Append to PATH
 # fish_add_path --path /home/mediacom/zig-x86_64-linux-0.14.1 || true
