@@ -5,6 +5,7 @@ lives in its own top-level directory; copy or symlink the pieces you want into
 `~/.config` (there's no install script — it's a reference layout).
 
 ```
+btop/      btop config (symlink btop.conf to ~/.config/btop/btop.conf)
 emacs/     Emacs config
 fish/      fish shell: config.fish, functions/, conf.d/
 ghostty/   Ghostty terminal config (symlink to ~/Library/Application Support/com.mitchellh.ghostty/config)
